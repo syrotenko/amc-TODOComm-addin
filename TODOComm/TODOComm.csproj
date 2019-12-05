@@ -65,6 +65,7 @@
     <Compile Include="Helper.cs" />
     <Compile Include="Main.cs" />
     <Compile Include="Commands\MakeNoteSingleObjCommand.cs" />
+    <Compile Include="Models\ElementModel.cs" />
     <Compile Include="Models\TODOCommModel.cs" />
     <Compile Include="UI\TODOCommPane.cs" />
     <Compile Include="Properties\Resource1.Designer.cs">

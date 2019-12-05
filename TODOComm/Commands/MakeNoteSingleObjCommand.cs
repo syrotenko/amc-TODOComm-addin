@@ -21,7 +21,9 @@ namespace TODOComm.Commands {
             // Choose object
             try {
                 Reference objRef = selection.PickObject(ObjectType.Element, Prompts.SELECT_OBJ);
-                comm.addElement(doc.GetElement(objRef));
+                Element elem = doc.GetElement(objRef);
+
+                comm.addElement(new ElementModel(elem.Id, elem.Name));
             }
             catch (Autodesk.Revit.Exceptions.OperationCanceledException) {
                 return Result.Cancelled;

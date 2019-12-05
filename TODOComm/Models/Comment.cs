@@ -7,7 +7,7 @@ using System.ComponentModel;
 namespace TODOComm.Models {
     public class Comment : INotifyPropertyChanged {
         public Comment(Document doc) {
-            this.Elements = new ObservableCollection<Element>();
+            this.Elements = new ObservableCollection<ElementModel>();
             this.doc = doc;
         }
 
@@ -23,17 +23,6 @@ namespace TODOComm.Models {
             }
         }
 
-        //private TextNote textNote;
-        //public TextNote TextNote {
-        //    get {
-        //        return this.textNote;
-        //    }
-        //    set {
-        //        this.textNote = value;
-        //        OnPropertyChanged(PropertyNames.TEXTNOTE);
-        //    }
-        //}
-
         private ElementId textNoteId;
         public ElementId TextNoteId {
             get {
@@ -45,8 +34,8 @@ namespace TODOComm.Models {
             }
         }
 
-        private ObservableCollection<Element> elements;
-        public ObservableCollection<Element> Elements {
+        private ObservableCollection<ElementModel> elements;
+        public ObservableCollection<ElementModel> Elements {
             get {
                 return elements;
             }
@@ -70,14 +59,12 @@ namespace TODOComm.Models {
         public Document doc;
 
 
-        public void addElement(Element element) {
+        public void addElement(ElementModel element) {
             this.Elements.Add(element);
-            this.OnPropertyChanged(PropertyNames.ELEMENTS);
         }
 
-        public void removeElement(Element element) {
+        public void removeElement(ElementModel element) {
             this.Elements.Remove(element);
-            this.OnPropertyChanged(PropertyNames.ELEMENTS);
         }
 
         public void applyChanges() {
@@ -103,16 +90,9 @@ namespace TODOComm.Models {
 
         public static class PropertyNames {
             public static string COMMENT_TEXT = "CommentText";
-            //public static string TEXTNOTE = "TextNote";
             public static string TEXTNOTE_ID = "TextNoteId";
             public static string ELEMENTS = "Elements";
             public static string COMMENT_POSITION = "CommentPosition";
-        }
-    }
-
-    class ExtCommand : IExternalCommand {
-        public Result Execute(ExternalCommandData commandData, ref string message, ElementSet elements) {
-            throw new System.NotImplementedException();
         }
     }
 }

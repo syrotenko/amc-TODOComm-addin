@@ -4,7 +4,6 @@ using Autodesk.Revit.UI.Selection;
 using System.Collections.Generic;
 using TODOComm.Models;
 using TODOComm.UI;
-using System.Linq;
 
 namespace TODOComm.Commands {
     [Autodesk.Revit.Attributes.Transaction(Autodesk.Revit.Attributes.TransactionMode.Manual)]
@@ -24,8 +23,9 @@ namespace TODOComm.Commands {
             // Choose object
             try {
                 IList<Reference> objRefs = selection.PickObjects(ObjectType.Element, Prompts.SELECT_OBJS);
-                foreach (Reference item in objRefs) {
-                    comm.addElement(doc.GetElement(item));
+                foreach (Reference objRef in objRefs) {
+                    Element elem = doc.GetElement(objRef);
+                    comm.addElement(new ElementModel(elem.Id, elem.Name));
                 }
             }
             catch (Autodesk.Revit.Exceptions.OperationCanceledException) {
@@ -58,6 +58,8 @@ namespace TODOComm.Commands {
 
                     trn.Commit();
                 }
+
+                TODOCommModel.getInstance().addComment(comm);
             }
             else {
                 return Result.Cancelled;
