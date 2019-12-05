@@ -15,8 +15,13 @@
             </DataTemplate>
         </Grid.Resources>
 
-        <ListBox x:Name="commentsLB" ItemsSource="{Binding Path=TODOCommModel.Comments, Mode=TwoWay}" ItemTemplate="{Binding Source={StaticResource commentsListDataTemplate}}" 
-                 ListBoxItem.MouseDoubleClick="lbi_MouseDoubleClick" Tag="{Binding ElementName=commentsLB, Path=SelectedItem}">
+        <ListBox x:Name="commentsLB" ItemsSource="{Binding Path=Comments, Mode=TwoWay}" SelectedItem="{Binding Path=SelectedComment}" ItemTemplate="{Binding Source={StaticResource commentsListDataTemplate}}">
+            <ListBox.ItemContainerStyle>
+                <Style TargetType="{x:Type ListBoxItem}">
+                    <EventSetter Event="MouseDoubleClick" Handler="lbi_MouseDoubleClick" />
+                    <EventSetter Event="MouseEnter" Handler="lbi_MouseDown" />
+                </Style>
+            </ListBox.ItemContainerStyle>
         </ListBox>
     </Grid>
 </Page>

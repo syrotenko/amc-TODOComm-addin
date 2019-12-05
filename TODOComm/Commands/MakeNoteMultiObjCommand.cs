@@ -18,7 +18,7 @@ namespace TODOComm.Commands {
             Document doc = uiDoc.Document;
             TextNote note;
 
-            Comment comm = new Comment(doc);
+            Comment comm = new Comment(uiDoc);
 
             // Choose object
             try {

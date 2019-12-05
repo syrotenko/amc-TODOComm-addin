@@ -1,5 +1,4 @@
 ﻿using Autodesk.Revit.UI;
-using System.Diagnostics;
 using System.Windows.Controls;
 using System.Windows.Input;
 
@@ -8,8 +7,9 @@ namespace TODOComm.UI {
     /// Interaction logic for TODOCommMainPage.xaml
     /// </summary>
     public partial class TODOCommMainPage : Page, IDockablePaneProvider {
-        TODOCommPaneViewModel viewModel = new TODOCommPaneViewModel();
+        TODOCommPaneViewModel viewModel;
         public TODOCommMainPage() {
+            viewModel = new TODOCommPaneViewModel();
             InitializeComponent();
             DataContext = viewModel;
         }
@@ -22,8 +22,13 @@ namespace TODOComm.UI {
         }
 
         void lbi_MouseDoubleClick(object sender, MouseButtonEventArgs e) {
-            if (viewModel.EditComm.CanExecute((((ListBox)sender).Tag)))
-                viewModel.EditComm.Execute((((ListBox)sender).Tag));
+            if (viewModel.EditComm.CanExecute(((ListBoxItem)sender).DataContext))
+                viewModel.EditComm.Execute(((ListBoxItem)sender).DataContext);
+        }
+
+        void lbi_MouseDown(object sender, MouseEventArgs e) {
+            if (viewModel.SelectComm.CanExecute(((ListBoxItem)sender).DataContext))
+                viewModel.SelectComm.Execute(((ListBoxItem)sender).DataContext);
         }
     }
 }

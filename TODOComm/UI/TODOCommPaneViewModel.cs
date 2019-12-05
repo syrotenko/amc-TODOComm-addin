@@ -1,7 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.Windows.Input;
 using TODOComm.Models;
 
@@ -10,9 +9,25 @@ namespace TODOComm.UI {
         public TODOCommPaneViewModel() {
             this.TODOCommModel = TODOCommModel.getInstance();
             this.setupCommands();
+            this.comments = TODOCommModel.Comments;
         }
 
+        private ObservableCollection<Comment> comments;
+        public ObservableCollection<Comment> Comments {
+            get { return comments; }
+            set { comments = value; }
+        }
+
+
+        private Comment selectedComment;
+        public Comment SelectedComment {
+            get { return selectedComment; }
+            set { selectedComment = value; }
+        }
+
+
         public BtnCommands EditComm { get; set; }
+        public BtnCommands SelectComm { get; set; }
 
         public TODOCommModel TODOCommModel { get; set; }
 
@@ -22,6 +37,12 @@ namespace TODOComm.UI {
                     WindowMain win = new WindowMain(comm);
                     win.WindowStartupLocation = System.Windows.WindowStartupLocation.CenterScreen;
                     win.ShowDialog();
+                }
+            };
+
+            this.SelectComm = new BtnCommands() {
+                act = (comm) => {
+                    comm.highlightComment();
                 }
             };
         }
@@ -34,7 +55,6 @@ namespace TODOComm.UI {
 
     public class BtnCommands : ICommand {
         public Action<Comment> act;
-        //public Func<bool> func;
 
         public event EventHandler CanExecuteChanged;
 

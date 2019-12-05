@@ -3,12 +3,14 @@ using Autodesk.Revit.UI;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Linq;
 
 namespace TODOComm.Models {
     public class Comment : INotifyPropertyChanged {
-        public Comment(Document doc) {
+        public Comment(UIDocument uiDoc) {
             this.Elements = new ObservableCollection<ElementModel>();
-            this.doc = doc;
+            this.uiDoc = uiDoc;
+            this.doc = uiDoc.Document;
         }
 
         private string commentText;
@@ -56,7 +58,8 @@ namespace TODOComm.Models {
             }
         }
 
-        public Document doc;
+        private Document doc;
+        private UIDocument uiDoc;
 
 
         public void addElement(ElementModel element) {
@@ -80,6 +83,12 @@ namespace TODOComm.Models {
 
         public bool isTextNoteExist(ElementId textNoteIdOther) {
             return this.TextNoteId.Equals(textNoteIdOther);
+        }
+        public void highlightComment() {
+            List<ElementId> elemIdsToHighlight = Elements.Select(x => x.Id).ToList();
+            elemIdsToHighlight.Add(this.TextNoteId);
+
+            uiDoc.Selection.SetElementIds(elemIdsToHighlight);
         }
 
 
