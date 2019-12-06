@@ -27,7 +27,19 @@ namespace TODOComm.UI {
             return pushButtonData;
         }
 
-        internal static RibbonItemData createMakeNoteSingleObjButton() {
+        public static PushButtonData createMakeNoteWithoutObjButton() {
+            PushButtonData pushButtonData = new PushButtonData("makeNoteWithoutObj", "Make comment\nwithout object",
+                                                               Assembly.GetExecutingAssembly().Location,
+                                                               MakeNoteWithoutObjCommand.getLocation());
+
+            // TODO: change img
+            pushButtonData.Image = Helper.getBitmapImage(@"\resources\showPanel_16x16.png");
+            pushButtonData.LargeImage = Helper.getBitmapImage(@"\resources\showPanel_32x32.png");
+
+            return pushButtonData;
+        }
+
+        public static RibbonItemData createMakeNoteSingleObjButton() {
             PushButtonData pushButtonData = new PushButtonData("makeNoteSingleObj", "Make comment\nfor single object",
                                                                Assembly.GetExecutingAssembly().Location,
                                                                MakeNoteSingleObjCommand.getLocation());
@@ -39,7 +51,7 @@ namespace TODOComm.UI {
             return pushButtonData;
         }
 
-        internal static RibbonItemData createMakeNoteMultiObjButton() {
+        public static RibbonItemData createMakeNoteMultiObjButton() {
             PushButtonData pushButtonData = new PushButtonData("makeNoteMultiObj", "Make comment\nfor several objects",
                                                                Assembly.GetExecutingAssembly().Location,
                                                                MakeNoteMultiObjCommand.getLocation());

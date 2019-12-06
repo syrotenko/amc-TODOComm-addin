@@ -64,6 +64,7 @@ namespace TODOComm {
 
             panel.AddItem(ElementBuilder.createShowPanelButton());
             panel.AddItem(ElementBuilder.createHidePanelButton());
+            panel.AddItem(ElementBuilder.createMakeNoteWithoutObjButton());
             panel.AddItem(ElementBuilder.createMakeNoteSingleObjButton());
             panel.AddItem(ElementBuilder.createMakeNoteMultiObjButton());
         }

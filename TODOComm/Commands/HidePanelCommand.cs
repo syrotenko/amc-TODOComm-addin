@@ -1,6 +1,7 @@
 ﻿using Autodesk.Revit.DB;
 using Autodesk.Revit.UI;
 using System;
+using System.Reflection;
 
 namespace TODOComm.Commands {
     [Autodesk.Revit.Attributes.Transaction(Autodesk.Revit.Attributes.TransactionMode.Manual)]
@@ -14,7 +15,7 @@ namespace TODOComm.Commands {
         }
 
         public static string getLocation() {
-            return typeof(HidePanelCommand).FullName;
+            return MethodBase.GetCurrentMethod().ReflectedType.FullName;
         }
     }
 }

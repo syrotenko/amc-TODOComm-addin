@@ -1,6 +1,7 @@
 ﻿using Autodesk.Revit.DB;
 using Autodesk.Revit.UI;
 using Autodesk.Revit.UI.Selection;
+using System.Reflection;
 using TODOComm.Models;
 using TODOComm.UI;
 
@@ -67,7 +68,7 @@ namespace TODOComm.Commands {
         }
 
         public static string getLocation() {
-            return typeof(MakeNoteSingleObjCommand).FullName;
+            return MethodBase.GetCurrentMethod().ReflectedType.FullName;
         }
     }
 }

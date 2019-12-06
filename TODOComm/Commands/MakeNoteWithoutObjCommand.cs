@@ -1,7 +1,6 @@
 ﻿using Autodesk.Revit.DB;
 using Autodesk.Revit.UI;
 using Autodesk.Revit.UI.Selection;
-using System.Collections.Generic;
 using System.Reflection;
 using TODOComm.Models;
 using TODOComm.UI;
@@ -9,7 +8,7 @@ using TODOComm.UI;
 namespace TODOComm.Commands {
     [Autodesk.Revit.Attributes.Transaction(Autodesk.Revit.Attributes.TransactionMode.Manual)]
     [Autodesk.Revit.Attributes.Regeneration(Autodesk.Revit.Attributes.RegenerationOption.Manual)]
-    class MakeNoteMultiObjCommand : IExternalCommand {
+    class MakeNoteWithoutObjCommand : IExternalCommand {
 
         public Result Execute(ExternalCommandData commandData, ref string message, ElementSet elements) {
             UIDocument uiDoc = commandData.Application.ActiveUIDocument;
@@ -17,18 +16,6 @@ namespace TODOComm.Commands {
             Document doc = uiDoc.Document;
 
             Comment comm = new Comment(uiDoc);
-
-            // Choose object
-            try {
-                IList<Reference> objRefs = selection.PickObjects(ObjectType.Element, Prompts.SELECT_OBJS);
-                foreach (Reference objRef in objRefs) {
-                    Element elem = doc.GetElement(objRef);
-                    comm.addElement(new ElementModel(elem.Id, elem.Name));
-                }
-            }
-            catch (Autodesk.Revit.Exceptions.OperationCanceledException) {
-                return Result.Cancelled;
-            }
 
             // Choose place for text
             try {
