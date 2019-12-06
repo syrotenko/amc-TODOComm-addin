@@ -62,5 +62,17 @@ namespace TODOComm.UI {
 
             return pushButtonData;
         }
+
+        public static RibbonItemData createMakeNoteSelectedObjButton() {
+            PushButtonData pushButtonData = new PushButtonData("makeNoteSelectedObj", "Make comment\nfor selected objects",
+                                                               Assembly.GetExecutingAssembly().Location,
+                                                               MakeNoteSelectedObjCommand.getLocation());
+
+            // TODO: change img
+            pushButtonData.Image = Helper.getBitmapImage(@"\resources\showPanel_16x16.png");
+            pushButtonData.LargeImage = Helper.getBitmapImage(@"\resources\showPanel_32x32.png");
+
+            return pushButtonData;
+        }
     }
 }
