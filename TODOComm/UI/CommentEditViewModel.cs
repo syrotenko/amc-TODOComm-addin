@@ -1,29 +1,26 @@
 ﻿using System;
-using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Windows.Input;
 using TODOComm.Models;
 
 namespace TODOComm.UI {
-    public class TODOCommViewModel : INotifyPropertyChanged {
-        public TODOCommViewModel(Comment comment) {
+    public class CommentEditViewModel : INotifyPropertyChanged {
+        public CommentEditViewModel(Comment comment) {
             this.Comment = comment;
             
             this.setupCommands();
-            this.strs = new ObservableCollection<string>() { "path", "s", "qwe" };
 
-            Comment.PropertyChanged += (s, e) => { RaisePropertyChanged(s, e); };
+            Comment.PropertyChanged += RaisePropertyChanged;
         }
 
-        public ControlWindowCommands ApplyChangesCommand { get; set; }
-        public ControlWindowCommands CancelChangesCommand { get; set; }
-        public ControlWindowCommands CloseWindowCommand { get; set; }
+        public CommentEditCommand ApplyChangesCommand { get; set; }
+        public CommentEditCommand CancelChangesCommand { get; set; }
+        public CommentEditCommand CloseWindowCommand { get; set; }
+        
         public Comment Comment { get; set; }
 
         public bool isApply { get; private set; }
 
-
-        public ObservableCollection<string> strs { get; set; }
 
         private void RaisePropertyChanged(object sender, PropertyChangedEventArgs e) {
             if (string.Compare(e.PropertyName, Comment.PropertyNames.COMMENT_TEXT) == 0) {
@@ -33,7 +30,7 @@ namespace TODOComm.UI {
 
 
         private void setupCommands() {
-            this.ApplyChangesCommand = new ControlWindowCommands() {
+            this.ApplyChangesCommand = new CommentEditCommand() {
                 act = () => {
                     this.isApply = true;
                     this.Comment.applyChanges();
@@ -42,7 +39,7 @@ namespace TODOComm.UI {
                 func = () => !string.IsNullOrEmpty(this.Comment.CommentText)
             };
 
-            this.CancelChangesCommand = new ControlWindowCommands() {
+            this.CancelChangesCommand = new CommentEditCommand() {
                 act = () => {
                     this.isApply = false;
                     this.Comment.cancelChanges();
@@ -57,7 +54,7 @@ namespace TODOComm.UI {
         }
     }
 
-    public class ControlWindowCommands : ICommand {
+    public class CommentEditCommand : ICommand {
         public Action act;
         public Func<bool> func;
 

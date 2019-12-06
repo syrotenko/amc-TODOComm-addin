@@ -1,64 +1,66 @@
 ﻿using Autodesk.Revit.ApplicationServices;
 using Autodesk.Revit.DB;
+using Autodesk.Revit.DB.Events;
 using Autodesk.Revit.UI;
-using System.Diagnostics;
+using System;
 using TODOComm.UI;
 
 namespace TODOComm {
     class Main : IExternalApplication {
-        public ExternalEventMy handler_event;
-        public ExternalEvent exEvent;
-        public UIControlledApplication application;
-
-        public static Main thisApp;
-
-        private const string addinName = "TODOComm add-in";
+        public static Main ExternalApp;
+        
+        private UIControlledApplication application;
+        private ChangeTextNoteTextHandler changeTextNoteTextHandler;
+        private ExternalEvent changeTextNoteTextEvent;
+        private const string ADDIN_NAME = "TODOComm add-in";
+        private const string CONTROL_PANEL_NAME = "Control panel";
 
         public Result OnStartup(UIControlledApplication application) {
-            Debug.WriteLine("Startup app");
-
             this.application = application;
 
-            buildUI(application);
             application.ControlledApplication.ApplicationInitialized += RegisterDockablePanes;
 
-            this.handler_event = new ExternalEventMy();
-            this.exEvent = ExternalEvent.Create(handler_event);
+            buildUI(application);
+            createExternalEvents();
 
-            //application.ControlledApplication.DocumentChanged += new EventHandler<Autodesk.Revit.DB.Events.DocumentChangedEventArgs>(wasChange);
-
-            thisApp = this;
+            ExternalApp = this;
 
             return Result.Succeeded;
         }
 
-        //public void wasChange(object sender, DocumentChangedEventArgs args) {
-        //    args.GetModifiedElementIds();
-        //    Debug.WriteLine("OWN: AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
-        //}
+        
+        public Result OnShutdown(UIControlledApplication application) {
+            return Result.Succeeded;
+        }
+
+        public void registerDocumentChanged (EventHandler<DocumentChangedEventArgs> eventHandler) {
+            application.ControlledApplication.DocumentChanged += eventHandler;
+        }
 
         public void changeTextNoteText(Document doc, ElementId textNoteId, string newTextValue) {
-            this.handler_event.doc = doc;
-            this.handler_event.textNoteId = textNoteId;
-            this.handler_event.newTextValue = newTextValue;
+            this.changeTextNoteTextHandler.doc = doc;
+            this.changeTextNoteTextHandler.textNoteId = textNoteId;
+            this.changeTextNoteTextHandler.newTextValue = newTextValue;
 
-            this.exEvent.Raise();
+            this.changeTextNoteTextEvent.Raise();
         }
 
-        public Result OnShutdown(UIControlledApplication application) {
-            Debug.WriteLine("Close app");
+        
+        private void RegisterDockablePanes(object sender, ApplicationInitializedEventArgs e) {
+            UIApplication application = new UIApplication((Application)sender);
+            Guid guid = new Guid(Properties.Resource.PAIN_GUID);
 
-            return Result.Succeeded;
+            application.RegisterDockablePane(new DockablePaneId(guid), Properties.Resource.PANE_TITLE, new UI.TODOCommPane());
         }
 
-        private void RegisterDockablePanes(object sender, Autodesk.Revit.DB.Events.ApplicationInitializedEventArgs e) {
-            TODOCommPane pane = new TODOCommPane();
-            pane.register(new UIApplication((Application)sender));
+        private void createExternalEvents() {
+            this.changeTextNoteTextHandler = new ChangeTextNoteTextHandler();
+            this.changeTextNoteTextEvent = ExternalEvent.Create(changeTextNoteTextHandler);
         }
 
         private void buildUI(UIControlledApplication application) {
-            application.CreateRibbonTab(addinName);
-            var panel = application.CreateRibbonPanel(addinName, "Control panel");
+            application.CreateRibbonTab(ADDIN_NAME);
+            var panel = application.CreateRibbonPanel(ADDIN_NAME, CONTROL_PANEL_NAME);
 
             panel.AddItem(ElementBuilder.createShowPanelButton());
             panel.AddItem(ElementBuilder.createHidePanelButton());
@@ -67,7 +69,7 @@ namespace TODOComm {
         }
     }
 
-    class ExternalEventMy : IExternalEventHandler {
+    class ChangeTextNoteTextHandler : IExternalEventHandler {
         public Document doc;
         public ElementId textNoteId;
         public string newTextValue;
@@ -90,16 +92,6 @@ namespace TODOComm {
         }
         public string GetName() {
             return TransactionNames.EDIT_TEXT_CUSTOM + " event";
-        }
-    }
-
-    class ExternalEventMy2 : IExternalEventHandler {
-        public void Execute(UIApplication app) {
-            throw new System.NotImplementedException();
-        }
-
-        public string GetName() {
-            throw new System.NotImplementedException();
         }
     }
 }

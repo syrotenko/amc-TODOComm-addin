@@ -118,6 +118,9 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="PAIN_GUID" xml:space="preserve">
-    <value>9A54612A-0885-445E-9982-E6EA7C60029E</value>
+    <value>BB465D04-71A7-441F-BAFC-485544C61257</value>
+  </data>
+  <data name="PANE_TITLE" xml:space="preserve">
+    <value>TODOComm</value>
   </data>
 </root>

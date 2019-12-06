@@ -22,14 +22,14 @@ namespace TODOComm.Properties {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "16.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    internal class Resource1 {
+    internal class Resource {
         
         private static global::System.Resources.ResourceManager resourceMan;
         
         private static global::System.Globalization.CultureInfo resourceCulture;
         
         [global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        internal Resource1() {
+        internal Resource() {
         }
         
         /// <summary>
@@ -39,7 +39,7 @@ namespace TODOComm.Properties {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("TODOComm.Properties.Resource1", typeof(Resource1).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("TODOComm.Properties.Resource", typeof(Resource).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -61,11 +61,20 @@ namespace TODOComm.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 9A54612A-0885-445E-9982-E6EA7C60029E.
+        ///   Looks up a localized string similar to BB465D04-71A7-441F-BAFC-485544C61257.
         /// </summary>
         internal static string PAIN_GUID {
             get {
                 return ResourceManager.GetString("PAIN_GUID", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to TODOComm.
+        /// </summary>
+        internal static string PANE_TITLE {
+            get {
+                return ResourceManager.GetString("PANE_TITLE", resourceCulture);
             }
         }
     }

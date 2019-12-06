@@ -11,12 +11,9 @@ namespace TODOComm.Commands {
     class MakeNoteMultiObjCommand : IExternalCommand {
 
         public Result Execute(ExternalCommandData commandData, ref string message, ElementSet elements) {
-            Selection selection = commandData.Application.ActiveUIDocument.Selection;
-            
-
             UIDocument uiDoc = commandData.Application.ActiveUIDocument;
+            Selection selection = uiDoc.Selection;
             Document doc = uiDoc.Document;
-            TextNote note;
 
             Comment comm = new Comment(uiDoc);
 
@@ -48,6 +45,9 @@ namespace TODOComm.Commands {
 
             if (win.viewModel.isApply) {
                 // Create a comment
+
+                TextNote note;
+
                 using (Transaction trn = new Transaction(doc)) {
                     trn.Start(TransactionNames.CREATE_TEXTNOTE_CUSTOM);
 

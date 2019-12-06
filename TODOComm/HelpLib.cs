@@ -22,6 +22,6 @@ namespace TODOComm {
     static class TransactionNames {
         public const string EDIT_TEXT = "Edit Text";
         public const string EDIT_TEXT_CUSTOM = "Edit Text_TODOComm";
-        public static string CREATE_TEXTNOTE_CUSTOM = "Create TextNote_TODOComm";
+        public const string CREATE_TEXTNOTE_CUSTOM = "Create TextNote_TODOComm";
     }
 }

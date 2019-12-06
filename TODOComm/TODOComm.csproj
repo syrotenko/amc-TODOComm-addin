@@ -61,35 +61,32 @@
     <Compile Include="Commands\HidePanelCommand.cs" />
     <Compile Include="Commands\MakeNoteMultiObjCommand.cs" />
     <Compile Include="Commands\ShowPanelCommand.cs" />
-    <Compile Include="ExternalEventExample.cs" />
-    <Compile Include="ExternalEventHandler.cs" />
     <Compile Include="Models\Comment.cs" />
-    <Compile Include="Helper.cs" />
+    <Compile Include="HelpLib.cs" />
     <Compile Include="Main.cs" />
     <Compile Include="Commands\MakeNoteSingleObjCommand.cs" />
     <Compile Include="Models\ElementModel.cs" />
     <Compile Include="Models\TODOCommModel.cs" />
-    <Compile Include="UI\TODOCommPane.cs" />
-    <Compile Include="Properties\Resource1.Designer.cs">
+    <Compile Include="Properties\Resource.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
-      <DependentUpon>Resource1.resx</DependentUpon>
+      <DependentUpon>Resource.resx</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="UI\ElementBuilder.cs" />
-    <Compile Include="UI\TODOCommMainPage.xaml.cs">
-      <DependentUpon>TODOCommMainPage.xaml</DependentUpon>
+    <Compile Include="UI\TODOCommPane.xaml.cs">
+      <DependentUpon>TODOCommPane.xaml</DependentUpon>
     </Compile>
     <Compile Include="UI\TODOCommPaneViewModel.cs" />
-    <Compile Include="UI\TODOCommViewModel.cs" />
-    <Compile Include="UI\WindowMain.xaml.cs">
-      <DependentUpon>WindowMain.xaml</DependentUpon>
+    <Compile Include="UI\CommentEditViewModel.cs" />
+    <Compile Include="UI\CommentEdit.xaml.cs">
+      <DependentUpon>CommentEdit.xaml</DependentUpon>
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Properties\Resource1.resx">
+    <EmbeddedResource Include="Properties\Resource.resx">
       <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resource1.Designer.cs</LastGenOutput>
+      <LastGenOutput>Resource.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
@@ -101,11 +98,11 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <Page Include="UI\TODOCommMainPage.xaml">
+    <Page Include="UI\TODOCommPane.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="UI\WindowMain.xaml">
+    <Page Include="UI\CommentEdit.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

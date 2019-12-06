@@ -6,13 +6,13 @@ namespace TODOComm.UI {
     /// Interaction logic for WindowMain.xaml
     /// </summary>
     public partial class WindowMain : Window {
-        public TODOCommViewModel viewModel;
+        public CommentEditViewModel viewModel;
 
         public WindowMain(Comment comment) {
             InitializeComponent();
 
-            viewModel = new TODOCommViewModel(comment);
-            viewModel.CloseWindowCommand = new ControlWindowCommands() { act = () => this.Close() };
+            viewModel = new CommentEditViewModel(comment);
+            viewModel.CloseWindowCommand = new CommentEditCommand() { act = () => this.Close() };
 
             DataContext = viewModel;
         }

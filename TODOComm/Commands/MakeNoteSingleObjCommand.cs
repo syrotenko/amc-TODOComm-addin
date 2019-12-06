@@ -10,11 +10,9 @@ namespace TODOComm.Commands {
     class MakeNoteSingleObjCommand : IExternalCommand {
 
         public Result Execute(ExternalCommandData commandData, ref string message, ElementSet elements) {
-            Selection selection = commandData.Application.ActiveUIDocument.Selection;
-
             UIDocument uiDoc = commandData.Application.ActiveUIDocument;
+            Selection selection = uiDoc.Selection;
             Document doc = uiDoc.Document;
-            TextNote note;
 
             Comment comm = new Comment(uiDoc);
 
@@ -42,9 +40,12 @@ namespace TODOComm.Commands {
             WindowMain win = new WindowMain(comm);
             win.WindowStartupLocation = System.Windows.WindowStartupLocation.CenterScreen;
             win.ShowDialog();
-            
+
             if (win.viewModel.isApply) {
                 // Create a comment
+
+                TextNote note;
+
                 using (Transaction trn = new Transaction(doc)) {
                     trn.Start(TransactionNames.CREATE_TEXTNOTE_CUSTOM);
 

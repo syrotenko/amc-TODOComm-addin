@@ -13,7 +13,9 @@ namespace TODOComm.Models {
             this.doc = uiDoc.Document;
         }
 
+        
         private string commentText;
+        // TODO: save all state of this object, not only comment text
         private string prevCommentText;
         public string CommentText {
             get {
@@ -53,40 +55,41 @@ namespace TODOComm.Models {
                 return commentPosition;
             }
             set {
-                this.commentPosition = value;
+                commentPosition = value;
                 OnPropertyChanged(PropertyNames.COMMENT_POSITION);
             }
         }
+
 
         private Document doc;
         private UIDocument uiDoc;
 
 
         public void addElement(ElementModel element) {
-            this.Elements.Add(element);
+            Elements.Add(element);
         }
 
         public void removeElement(ElementModel element) {
-            this.Elements.Remove(element);
+            Elements.Remove(element);
         }
 
         public void applyChanges() {
-            this.prevCommentText = CommentText;
-            if (this.TextNoteId != null && this.doc != null) {
-                Main.thisApp.changeTextNoteText(doc, TextNoteId, CommentText);
+            prevCommentText = CommentText;
+            if (TextNoteId != null && doc != null) {
+                Main.ExternalApp.changeTextNoteText(doc, TextNoteId, CommentText);
             }
         }
 
         public void cancelChanges() {
-            this.CommentText = this.prevCommentText;
+            CommentText = prevCommentText;
         }
 
         public bool isTextNoteExist(ElementId textNoteIdOther) {
-            return this.TextNoteId.Equals(textNoteIdOther);
+            return TextNoteId.Equals(textNoteIdOther);
         }
         public void highlightComment() {
             List<ElementId> elemIdsToHighlight = Elements.Select(x => x.Id).ToList();
-            elemIdsToHighlight.Add(this.TextNoteId);
+            elemIdsToHighlight.Add(TextNoteId);
 
             uiDoc.Selection.SetElementIds(elemIdsToHighlight);
         }
@@ -98,10 +101,10 @@ namespace TODOComm.Models {
         }
 
         public static class PropertyNames {
-            public static string COMMENT_TEXT = "CommentText";
-            public static string TEXTNOTE_ID = "TextNoteId";
-            public static string ELEMENTS = "Elements";
-            public static string COMMENT_POSITION = "CommentPosition";
+            public const string COMMENT_TEXT = "CommentText";
+            public const string TEXTNOTE_ID = "TextNoteId";
+            public const string ELEMENTS = "Elements";
+            public const string COMMENT_POSITION = "CommentPosition";
         }
     }
 }

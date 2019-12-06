@@ -7,9 +7,9 @@ using TODOComm.Models;
 namespace TODOComm.UI {
     class TODOCommPaneViewModel : INotifyPropertyChanged {
         public TODOCommPaneViewModel() {
-            this.TODOCommModel = TODOCommModel.getInstance();
-            this.setupCommands();
-            this.comments = TODOCommModel.Comments;
+            TODOCommModel = TODOCommModel.getInstance();
+            setupCommands();
+            comments = TODOCommModel.Comments;
         }
 
         private ObservableCollection<Comment> comments;
@@ -17,7 +17,6 @@ namespace TODOComm.UI {
             get { return comments; }
             set { comments = value; }
         }
-
 
         private Comment selectedComment;
         public Comment SelectedComment {
@@ -29,23 +28,26 @@ namespace TODOComm.UI {
         public BtnCommands EditComm { get; set; }
         public BtnCommands SelectComm { get; set; }
 
-        public TODOCommModel TODOCommModel { get; set; }
+
+        private TODOCommModel TODOCommModel;
+
 
         private void setupCommands() {
-            this.EditComm = new BtnCommands() {
-                act = (comm) => {
-                    WindowMain win = new WindowMain(comm);
+            EditComm = new BtnCommands() {
+                act = (comment) => {
+                    WindowMain win = new WindowMain(comment);
                     win.WindowStartupLocation = System.Windows.WindowStartupLocation.CenterScreen;
                     win.ShowDialog();
                 }
             };
 
-            this.SelectComm = new BtnCommands() {
-                act = (comm) => {
-                    comm.highlightComment();
+            SelectComm = new BtnCommands() {
+                act = (comment) => {
+                    comment.highlightComment();
                 }
             };
         }
+
 
         public event PropertyChangedEventHandler PropertyChanged;
         public void OnPropertyChanged(string propertyName) {
