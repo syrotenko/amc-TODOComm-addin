@@ -1,6 +1,5 @@
 ﻿using Autodesk.Revit.DB;
 using Autodesk.Revit.DB.Events;
-using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -10,7 +9,6 @@ namespace TODOComm.Models {
     class TODOCommModel : INotifyPropertyChanged {
         private TODOCommModel() {
             comments = new ObservableCollection<Comment>();
-            Main.ExternalApp.registerDocumentChanged(new EventHandler<DocumentChangedEventArgs>(wasChange));
         }
 
         private static TODOCommModel instance;
@@ -34,7 +32,7 @@ namespace TODOComm.Models {
         }
 
         // TODO: make documentation
-        public void wasChange(object sender, DocumentChangedEventArgs args) {
+        public void wasChangeHandler(object sender, DocumentChangedEventArgs args) {
             if (args.GetTransactionNames().Contains(TransactionNames.EDIT_TEXT)) {
 
                 ICollection<ElementId> modifElemIds = args.GetModifiedElementIds();

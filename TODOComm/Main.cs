@@ -3,38 +3,45 @@ using Autodesk.Revit.DB;
 using Autodesk.Revit.DB.Events;
 using Autodesk.Revit.UI;
 using System;
+using TODOComm.Commands;
+using TODOComm.Models;
 using TODOComm.UI;
 
 namespace TODOComm {
     class Main : IExternalApplication {
+        public Main() {
+            todoModel = TODOCommModel.getInstance();
+            ExternalApp = this;
+        }
+
+
         public static Main ExternalApp;
-        
+
+        private TODOCommModel todoModel;
         private UIControlledApplication application;
         private ChangeTextNoteTextHandler changeTextNoteTextHandler;
         private ExternalEvent changeTextNoteTextEvent;
         private const string ADDIN_NAME = "TODOComm add-in";
         private const string CONTROL_PANEL_NAME = "Control panel";
 
+        
         public Result OnStartup(UIControlledApplication application) {
             this.application = application;
 
             application.ControlledApplication.ApplicationInitialized += RegisterDockablePanes;
 
             buildUI(application);
+
+            // Remark: it's necessary to create and register events in OnStartup method
+            // because UIControlledApplication instance is garantee created after OnStartup call
+            registerEventsAndHandlers();
             createExternalEvents();
 
-            ExternalApp = this;
-
             return Result.Succeeded;
         }
 
-        
         public Result OnShutdown(UIControlledApplication application) {
             return Result.Succeeded;
-        }
-
-        public void registerDocumentChanged (EventHandler<DocumentChangedEventArgs> eventHandler) {
-            application.ControlledApplication.DocumentChanged += eventHandler;
         }
 
         public void changeTextNoteText(Document doc, ElementId textNoteId, string newTextValue) {
@@ -44,19 +51,11 @@ namespace TODOComm {
 
             this.changeTextNoteTextEvent.Raise();
         }
-
         
-        private void RegisterDockablePanes(object sender, ApplicationInitializedEventArgs e) {
-            UIApplication application = new UIApplication((Application)sender);
-            Guid guid = new Guid(Properties.Resource.PAIN_GUID);
-
-            application.RegisterDockablePane(new DockablePaneId(guid), Properties.Resource.PANE_TITLE, new UI.TODOCommPane());
+        public void newCommentAdded(object sender, EventArgs args) {
+            todoModel.addComment(((CommandParent)sender).CommentObj);
         }
 
-        private void createExternalEvents() {
-            this.changeTextNoteTextHandler = new ChangeTextNoteTextHandler();
-            this.changeTextNoteTextEvent = ExternalEvent.Create(changeTextNoteTextHandler);
-        }
 
         private void buildUI(UIControlledApplication application) {
             application.CreateRibbonTab(ADDIN_NAME);
@@ -68,6 +67,30 @@ namespace TODOComm {
             panel.AddItem(ElementBuilder.createMakeNoteSingleObjButton());
             panel.AddItem(ElementBuilder.createMakeNoteMultiObjButton());
             panel.AddItem(ElementBuilder.createMakeNoteSelectedObjButton());
+        }
+
+        private void RegisterDockablePanes(object sender, ApplicationInitializedEventArgs e) {
+            UIApplication application = new UIApplication((Application)sender);
+            Guid guid = new Guid(Properties.Resource.PAIN_GUID);
+
+            application.RegisterDockablePane(new DockablePaneId(guid), Properties.Resource.PANE_TITLE, new UI.TODOCommPane());
+        }
+
+        private void createExternalEvents() {
+            this.changeTextNoteTextHandler = new ChangeTextNoteTextHandler();
+            this.changeTextNoteTextEvent = ExternalEvent.Create(changeTextNoteTextHandler);
+        }
+        
+        private void registerEventsAndHandlers() {
+            registerDocumentChanged(new EventHandler<DocumentChangedEventArgs>(todoModel.wasChangeHandler));
+            MakeNoteWithoutObjCommand.PropertyChangedCustom += newCommentAdded;
+            MakeNoteSingleObjCommand.PropertyChangedCustom += newCommentAdded;
+            MakeNoteMultiObjCommand.PropertyChangedCustom += newCommentAdded;
+            MakeNoteSelectedObjCommand.PropertyChangedCustom += newCommentAdded;
+        }
+        
+        private void registerDocumentChanged(EventHandler<DocumentChangedEventArgs> eventHandler) {
+            application.ControlledApplication.DocumentChanged += eventHandler;
         }
     }
 

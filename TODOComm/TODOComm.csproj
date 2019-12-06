@@ -58,6 +58,7 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Commands\CommandParent.cs" />
     <Compile Include="Commands\HidePanelCommand.cs" />
     <Compile Include="Commands\MakeNoteSelectedObjCommand.cs" />
     <Compile Include="Commands\MakeNoteMultiObjCommand.cs" />
