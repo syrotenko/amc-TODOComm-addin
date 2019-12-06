@@ -61,12 +61,12 @@ namespace TODOComm {
             application.CreateRibbonTab(ADDIN_NAME);
             var panel = application.CreateRibbonPanel(ADDIN_NAME, CONTROL_PANEL_NAME);
 
-            panel.AddItem(ElementBuilder.createShowPanelButton());
-            panel.AddItem(ElementBuilder.createHidePanelButton());
-            panel.AddItem(ElementBuilder.createMakeNoteWithoutObjButton());
-            panel.AddItem(ElementBuilder.createMakeNoteSingleObjButton());
-            panel.AddItem(ElementBuilder.createMakeNoteMultiObjButton());
-            panel.AddItem(ElementBuilder.createMakeNoteSelectedObjButton());
+            panel.AddItem(RevitUI.createShowPanelButton());
+            panel.AddItem(RevitUI.createHidePanelButton());
+            panel.AddItem(RevitUI.createMakeNoteWithoutObjButton());
+            panel.AddItem(RevitUI.createMakeNoteSingleObjButton());
+            panel.AddItem(RevitUI.createMakeNoteMultiObjButton());
+            panel.AddItem(RevitUI.createMakeNoteSelectedObjButton());
         }
 
         private void RegisterDockablePanes(object sender, ApplicationInitializedEventArgs e) {

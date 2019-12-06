@@ -3,7 +3,7 @@ using System.ComponentModel;
 using System.Windows.Input;
 using TODOComm.Models;
 
-namespace TODOComm.UI {
+namespace TODOComm.ViewModel {
     public class CommentEditViewModel : INotifyPropertyChanged {
         public CommentEditViewModel(Comment comment) {
             this.Comment = comment;

@@ -39,7 +39,7 @@ namespace TODOComm.Commands {
             }
 
             // Open comment edit window
-            WindowMain win = new WindowMain(CommentObj);
+            CommentEdit win = new CommentEdit(CommentObj);
             win.WindowStartupLocation = System.Windows.WindowStartupLocation.CenterScreen;
             win.ShowDialog();
 

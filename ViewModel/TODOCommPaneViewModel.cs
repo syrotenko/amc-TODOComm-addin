@@ -3,8 +3,9 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Windows.Input;
 using TODOComm.Models;
+using TODOComm.UI;
 
-namespace TODOComm.UI {
+namespace TODOComm.ViewModel {
     class TODOCommPaneViewModel : INotifyPropertyChanged {
         public TODOCommPaneViewModel() {
             TODOCommModel = TODOCommModel.getInstance();
@@ -35,7 +36,7 @@ namespace TODOComm.UI {
         private void setupCommands() {
             EditComm = new BtnCommands() {
                 act = (comment) => {
-                    WindowMain win = new WindowMain(comment);
+                    CommentEdit win = new CommentEdit(comment);
                     win.WindowStartupLocation = System.Windows.WindowStartupLocation.CenterScreen;
                     win.ShowDialog();
                 }

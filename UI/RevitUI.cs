@@ -3,7 +3,7 @@ using System.Reflection;
 using TODOComm.Commands;
 
 namespace TODOComm.UI {
-    public static class ElementBuilder {
+    public static class RevitUI {
         public static PushButtonData createShowPanelButton() {
             PushButtonData pushButtonData = new PushButtonData("showPanel", "Show panel",
                                                                Assembly.GetExecutingAssembly().Location,

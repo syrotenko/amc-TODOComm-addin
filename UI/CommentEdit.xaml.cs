@@ -1,14 +1,15 @@
 ﻿using System.Windows;
 using TODOComm.Models;
+using TODOComm.ViewModel;
 
 namespace TODOComm.UI {
     /// <summary>
     /// Interaction logic for WindowMain.xaml
     /// </summary>
-    public partial class WindowMain : Window {
+    public partial class CommentEdit : Window {
         public CommentEditViewModel viewModel;
 
-        public WindowMain(Comment comment) {
+        public CommentEdit(Comment comment) {
             InitializeComponent();
 
             viewModel = new CommentEditViewModel(comment);
