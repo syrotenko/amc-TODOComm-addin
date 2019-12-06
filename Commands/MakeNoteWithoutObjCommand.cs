@@ -16,19 +16,19 @@ namespace TODOComm.Commands {
             Selection selection = uiDoc.Selection;
             Document doc = uiDoc.Document;
 
-            CommentObj = new Comment(uiDoc);
+            Comment comment = new Comment(uiDoc);
 
             // Choose place for text
             try {
                 XYZ commentPoint = selection.PickPoint(Prompts.PLAC_NOTE);
-                CommentObj.CommentPosition = commentPoint;
+                comment.CommentPosition = commentPoint;
             }
             catch (Autodesk.Revit.Exceptions.OperationCanceledException) {
                 return Result.Cancelled;
             }
 
             // Open comment edit window
-            CommentEdit win = new CommentEdit(CommentObj);
+            CommentEdit win = new CommentEdit(comment);
             win.WindowStartupLocation = System.Windows.WindowStartupLocation.CenterScreen;
             win.ShowDialog();
 
@@ -40,10 +40,10 @@ namespace TODOComm.Commands {
                 using (Transaction trn = new Transaction(doc)) {
                     trn.Start(TransactionNames.CREATE_TEXTNOTE_CUSTOM);
 
-                    note = TextNote.Create(doc, uiDoc.ActiveView.Id, CommentObj.CommentPosition, CommentObj.CommentText,
+                    note = TextNote.Create(doc, uiDoc.ActiveView.Id, comment.CommentPosition, comment.CommentText,
                                            doc.GetDefaultElementTypeId(ElementTypeGroup.TextNoteType));
 
-                    CommentObj.TextNoteId = note.Id;
+                    comment.TextNoteId = note.Id;
 
                     trn.Commit();
                 }
@@ -52,18 +52,19 @@ namespace TODOComm.Commands {
                 return Result.Cancelled;
             }
 
+            CommentObj = comment;
             return Result.Succeeded;
         }
 
 
-        private Comment comment;
+        private Comment commentObj;
         public override Comment CommentObj {
             get {
-                return comment;
+                return commentObj;
             }
 
             set {
-                comment = value;
+                commentObj = value;
                 OnPropertyChanged(PropertyNames.COMMENT_OBJ);
             }
         }

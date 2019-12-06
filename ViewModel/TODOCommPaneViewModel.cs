@@ -21,13 +21,19 @@ namespace TODOComm.ViewModel {
 
         private Comment selectedComment;
         public Comment SelectedComment {
-            get { return selectedComment; }
-            set { selectedComment = value; }
+            get { 
+                return selectedComment; 
+            }
+            set { 
+                selectedComment = value;
+                OnPropertyChanged(PropertyNames.SELECTED_COMMNET);
+            }
         }
 
 
         public BtnCommands EditComm { get; set; }
         public BtnCommands SelectComm { get; set; }
+        public BtnCommands SetVisibleComm { get; set; }
 
 
         private TODOCommModel TODOCommModel;
@@ -44,7 +50,14 @@ namespace TODOComm.ViewModel {
 
             SelectComm = new BtnCommands() {
                 act = (comment) => {
+                    SelectedComment = comment;
                     comment.highlightComment();
+                }
+            };
+
+            SetVisibleComm = new BtnCommands() {
+                act = (comment) => {
+                    comment.IsVisible = comment.IsVisible == true ? false : true;
                 }
             };
         }
@@ -53,6 +66,11 @@ namespace TODOComm.ViewModel {
         public event PropertyChangedEventHandler PropertyChanged;
         public void OnPropertyChanged(string propertyName) {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+
+        public static class PropertyNames {
+            public const string SELECTED_COMMNET = "SelectedComment";
         }
     }
 

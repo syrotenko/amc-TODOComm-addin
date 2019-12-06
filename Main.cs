@@ -3,6 +3,7 @@ using Autodesk.Revit.DB;
 using Autodesk.Revit.DB.Events;
 using Autodesk.Revit.UI;
 using System;
+using System.Collections.Generic;
 using TODOComm.Commands;
 using TODOComm.Models;
 using TODOComm.UI;
@@ -12,19 +13,24 @@ namespace TODOComm {
         public Main() {
             todoModel = TODOCommModel.getInstance();
             ExternalApp = this;
+            Transactions = new TransactionsAvailable();
         }
 
 
         public static Main ExternalApp;
+        public TransactionsAvailable Transactions;
 
-        private TODOCommModel todoModel;
-        private UIControlledApplication application;
-        private ChangeTextNoteTextHandler changeTextNoteTextHandler;
-        private ExternalEvent changeTextNoteTextEvent;
         private const string ADDIN_NAME = "TODOComm add-in";
         private const string CONTROL_PANEL_NAME = "Control panel";
 
-        
+        private TODOCommModel todoModel;
+        private UIControlledApplication application;
+
+        private ExternalAppEvent changeTextNoteTextHandler;
+        private ExternalAppEvent showElementsHandler;
+        private ExternalAppEvent hideElementsHandler;
+
+
         public Result OnStartup(UIControlledApplication application) {
             this.application = application;
 
@@ -44,16 +50,15 @@ namespace TODOComm {
             return Result.Succeeded;
         }
 
-        public void changeTextNoteText(Document doc, ElementId textNoteId, string newTextValue) {
-            this.changeTextNoteTextHandler.doc = doc;
-            this.changeTextNoteTextHandler.textNoteId = textNoteId;
-            this.changeTextNoteTextHandler.newTextValue = newTextValue;
-
-            this.changeTextNoteTextEvent.Raise();
-        }
-        
         public void newCommentAdded(object sender, EventArgs args) {
             todoModel.addComment(((CommandParent)sender).CommentObj);
+        }
+
+
+        public class TransactionsAvailable {
+            public Action<Document, ElementId, string> ChangeTextNoteText = Main.ExternalApp.changeTextNoteText;
+            public Action<Document, View, ICollection<ElementId>> ShowElements = Main.ExternalApp.showElements;
+            public Action<Document, View, ICollection<ElementId>> HideElements = Main.ExternalApp.hideElements;
         }
 
 
@@ -77,10 +82,11 @@ namespace TODOComm {
         }
 
         private void createExternalEvents() {
-            this.changeTextNoteTextHandler = new ChangeTextNoteTextHandler();
-            this.changeTextNoteTextEvent = ExternalEvent.Create(changeTextNoteTextHandler);
+            this.changeTextNoteTextHandler = new ExternalAppEvent(new ChangeTextNoteTextHandler());
+            this.showElementsHandler = new ExternalAppEvent(new ShowElementsHandler());
+            this.hideElementsHandler = new ExternalAppEvent(new HideElementsHandler());
         }
-        
+
         private void registerEventsAndHandlers() {
             registerDocumentChanged(new EventHandler<DocumentChangedEventArgs>(todoModel.wasChangeHandler));
             MakeNoteWithoutObjCommand.PropertyChangedCustom += newCommentAdded;
@@ -88,9 +94,102 @@ namespace TODOComm {
             MakeNoteMultiObjCommand.PropertyChangedCustom += newCommentAdded;
             MakeNoteSelectedObjCommand.PropertyChangedCustom += newCommentAdded;
         }
+
+
+        private void changeTextNoteText(Document doc, ElementId textNoteId, string newTextValue) {
+            ((ChangeTextNoteTextHandler)changeTextNoteTextHandler.handler).doc = doc;
+            ((ChangeTextNoteTextHandler)changeTextNoteTextHandler.handler).textNoteId = textNoteId;
+            ((ChangeTextNoteTextHandler)changeTextNoteTextHandler.handler).newTextValue = newTextValue;
+
+            this.changeTextNoteTextHandler.Raise();
+        }
+
+        private void showElements(Document doc, View view, ICollection<ElementId> elementIds) {
+            ((ShowElementsHandler)showElementsHandler.handler).doc = doc;
+            ((ShowElementsHandler)showElementsHandler.handler).view = view;
+            ((ShowElementsHandler)showElementsHandler.handler).elementIds = elementIds;
+
+            this.showElementsHandler.Raise();
+        }
+
+        private void hideElements(Document doc, View view, ICollection<ElementId> elementIds) {
+            ((HideElementsHandler)hideElementsHandler.handler).doc = doc;
+            ((HideElementsHandler)hideElementsHandler.handler).view = view;
+            ((HideElementsHandler)hideElementsHandler.handler).elementIds = elementIds;
+
+            this.hideElementsHandler.Raise();
+        }
+
         
         private void registerDocumentChanged(EventHandler<DocumentChangedEventArgs> eventHandler) {
             application.ControlledApplication.DocumentChanged += eventHandler;
+        }
+    }
+
+    struct ExternalAppEvent {
+        public ExternalAppEvent(IExternalEventHandler handler) {
+            this.handler = handler;
+            handlerEvent = ExternalEvent.Create(this.handler);
+        }
+
+        public IExternalEventHandler handler;
+        public ExternalEvent handlerEvent;
+
+        public void Raise() {
+            handlerEvent.Raise();
+        }
+    }
+
+
+    class ShowElementsHandler : IExternalEventHandler {
+        public Document doc;
+        public View view;
+        public ICollection<ElementId> elementIds;
+
+        public void Execute(UIApplication uiapp) {
+            // TODO: check and textNoteId
+            if (doc != null) {
+                using (var tran = new Transaction(doc, "Test")) {
+                    tran.Start();
+
+                    view.UnhideElements(elementIds);
+
+                    tran.Commit();
+                }
+
+                doc = null;
+                view = null;
+                elementIds = null;
+            }
+        }
+        public string GetName() {
+            return TransactionNames.EDIT_TEXT_CUSTOM + " event";
+        }
+    }
+
+    class HideElementsHandler : IExternalEventHandler {
+        public Document doc;
+        public View view;
+        public ICollection<ElementId> elementIds;
+
+        public void Execute(UIApplication uiapp) {
+            // TODO: check and textNoteId
+            if (doc != null) {
+                using (var tran = new Transaction(doc, "Test")) {
+                    tran.Start();
+
+                    view.HideElements(elementIds);
+
+                    tran.Commit();
+                }
+
+                doc = null;
+                view = null;
+                elementIds = null;
+            }
+        }
+        public string GetName() {
+            return TransactionNames.EDIT_TEXT_CUSTOM + " event";
         }
     }
 

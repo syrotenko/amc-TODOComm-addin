@@ -60,6 +60,23 @@ namespace TODOComm.Models {
             }
         }
 
+        private bool isVisible = true;
+        public bool IsVisible {
+            get {
+                return isVisible;
+            }
+            set {
+                isVisible = value;
+
+                if (value)
+                    showElements();
+                else
+                    hideElements();
+
+                OnPropertyChanged(PropertyNames.IS_VISIBLE);
+            }
+        }
+
 
         private Document doc;
         private UIDocument uiDoc;
@@ -76,7 +93,7 @@ namespace TODOComm.Models {
         public void applyChanges() {
             prevCommentText = CommentText;
             if (TextNoteId != null && doc != null) {
-                Main.ExternalApp.changeTextNoteText(doc, TextNoteId, CommentText);
+                Main.ExternalApp.Transactions.ChangeTextNoteText(doc, TextNoteId, CommentText);
             }
         }
 
@@ -94,6 +111,17 @@ namespace TODOComm.Models {
             uiDoc.Selection.SetElementIds(elemIdsToHighlight);
         }
 
+        private void showElements() {
+            Main.ExternalApp.Transactions.ShowElements(doc, uiDoc.ActiveView, new List<ElementId>() { TextNoteId });
+            //uiDoc.ActiveView.UnhideElements(new List<ElementId>() { TextNoteId });
+        }
+
+        private void hideElements() {
+            Main.ExternalApp.Transactions.HideElements(doc, uiDoc.ActiveView, new List<ElementId>() { TextNoteId });
+            //Main.ExternalApp.hideElements(doc, uiDoc.ActiveView, new List<ElementId>() { TextNoteId });
+            //uiDoc.ActiveView.HideElements(Elements.Select(elem => elem.Id).ToList());
+        }
+
 
         public event PropertyChangedEventHandler PropertyChanged;
         public void OnPropertyChanged(string propertyName) {
@@ -105,6 +133,7 @@ namespace TODOComm.Models {
             public const string TEXTNOTE_ID = "TextNoteId";
             public const string ELEMENTS = "Elements";
             public const string COMMENT_POSITION = "CommentPosition";
+            public const string IS_VISIBLE = "IsVisible";
         }
     }
 }

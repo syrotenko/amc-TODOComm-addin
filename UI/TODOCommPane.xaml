@@ -9,14 +9,25 @@
     <Grid Background="WhiteSmoke">
         <Grid.Resources>
             <DataTemplate x:Key="commentsListDataTemplate">
-                <TextBlock Text="{Binding Path=CommentText}">
-                </TextBlock>
+                <StackPanel Orientation="Horizontal">
+                    <CheckBox IsChecked="{Binding Path=IsVisible}" Height="20" ToolTip="Show/Hide note">
+
+                        <CheckBox.InputBindings>
+                            <MouseBinding MouseAction="LeftClick" 
+                                          Command="{Binding DataContext.SetVisibleComm , RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ListBox}}}"
+                                          CommandParameter="{Binding ElementName=commentsLB, Path=SelectedItem}"/>
+                        </CheckBox.InputBindings>
+                    </CheckBox>
+
+                    <TextBlock Text="{Binding Path=CommentText}">
+                    </TextBlock>
+                </StackPanel>
             </DataTemplate>
         </Grid.Resources>
 
-        <ListBox x:Name="commentsLB" 
+        <ListBox x:Name="commentsLB"
                  ItemsSource="{Binding Path=Comments, Mode=OneWay}" 
-                 SelectedItem="{Binding Path=SelectedComment}" 
+                 SelectedItem="{Binding Path=SelectedComment, Mode=TwoWay}" 
                  ItemTemplate="{Binding Source={StaticResource commentsListDataTemplate}}">
             
             <ListBox.ItemContainerStyle>
