@@ -24,8 +24,19 @@ namespace TODOComm.ViewModel {
         public CommentEditCommand RemoveElementCommand { get; set; }
 
         public Comment Comment { get; set; }
-
         public bool isApply { get; private set; }
+
+        private ElementModel selectedElement;
+        public ElementModel SelectedElement {
+            get {
+                return selectedElement;
+            }
+            
+            set {
+                selectedElement = value;
+                RemoveElementCommand.RaiseCanExecuteChanged();
+            }
+        }
 
 
         private void RaisePropertyChanged(object sender, PropertyChangedEventArgs e) {
@@ -65,8 +76,9 @@ namespace TODOComm.ViewModel {
 
             this.RemoveElementCommand = new CommentEditCommand() {
                 act = () => {
+                    Comment.removeElement(SelectedElement);
                 },
-                //func = () => TODOCommModel.getInstance().isCommentExists(this.Comment)
+                func = () => SelectedElement != null
             };
         }
 
