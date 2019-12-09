@@ -14,19 +14,18 @@ namespace TODOComm {
             return Directory.GetCurrentDirectory() + path;
         }
 
-        public static XYZ GetElementLocation(Element elem) {
+        public static XYZ GetElementPosition(Element elem) {
             Location loc = elem.Location;
 
-            LocationPoint lp = loc as LocationPoint;
-            if (null != lp) {
+            if (loc is LocationPoint lp) {
                 return lp.Point;
             }
-            else {
-                LocationCurve lc = loc as LocationCurve;
-
-                Debug.WriteLine("expected location to be either point or curve");
-                    
+            else if (loc is LocationCurve lc) {
                 return lc.Curve.GetEndPoint(0);
+            }
+            else {
+                // TODO: implement own exeption type
+                throw new Exception("Element should has either Point or Curve location");
             }
         }
     }
@@ -39,6 +38,7 @@ namespace TODOComm {
 
     static class TransactionNames {
         public const string EDIT_TEXT = "Edit Text";
+        public const string DRAG = "Drag";
         public const string EDIT_TEXT_CUSTOM = "Edit Text_TODOComm";
         public const string CREATE_TEXTNOTE_CUSTOM = "Create TextNote_TODOComm";
     }

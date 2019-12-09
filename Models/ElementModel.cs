@@ -39,6 +39,7 @@ namespace TODOComm.Models {
             }
             set {
                 position = value;
+
                 OnPropertyChanged(PropertyNames.POSITION);
             }
         }
@@ -54,11 +55,6 @@ namespace TODOComm.Models {
                 leader = value;
                 OnPropertyChanged(PropertyNames.LEADER);
             }
-        }
-
-        public void createLeader(TextNote textNote) {
-            Leader = textNote.AddLeader(TextNoteLeaderTypes.TNLT_STRAIGHT_L);
-            Leader.End = Position;
         }
 
 

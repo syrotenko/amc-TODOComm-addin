@@ -33,17 +33,75 @@ namespace TODOComm.Models {
 
         // TODO: make documentation
         public void wasChangeHandler(object sender, DocumentChangedEventArgs args) {
-            if (args.GetTransactionNames().Contains(TransactionNames.EDIT_TEXT)) {
-
-                ICollection<ElementId> modifElemIds = args.GetModifiedElementIds();
-                IEnumerable<ElementId> watchableElemIds = modifElemIds.Where(modifElemId => isWatchForTextNote(modifElemId));
-
-                if (watchableElemIds.Count() > 0) {
-                    Document doc = args.GetDocument();
-                    updateCommentText(doc, watchableElemIds);
+            foreach (string trnName in args.GetTransactionNames()) {
+                
+                switch (trnName) {
+                    case TransactionNames.EDIT_TEXT:
+                        editTextHandler(args);
+                        return;
+                    
+                    case TransactionNames.DRAG:
+                        dragHandler(args);
+                        return;
                 }
             }
         }
+
+        private void editTextHandler(DocumentChangedEventArgs args) {
+            ICollection<ElementId> modifElemIds = args.GetModifiedElementIds();
+            IEnumerable<Comment> textNoteToUpdate = Comments.Where(comm => modifElemIds.Contains(comm.TextNoteId));
+
+            if (textNoteToUpdate.Count() > 0) {
+                Document doc = args.GetDocument();
+                
+                Dictionary<ElementId, Element> modifElem = getElementsById(doc, textNoteToUpdate.Select(elem => elem.TextNoteId));
+                foreach (var item in textNoteToUpdate) {
+                    item.CommentText = ((TextNote)modifElem[item.TextNoteId]).Text;
+                }
+            }
+        }
+
+        private void dragHandler(DocumentChangedEventArgs args) {
+            ICollection<ElementId> modifElemIds = args.GetModifiedElementIds();
+
+
+            IEnumerable<ElementModel> elemsToUpdate = Comments.Select(comm => comm.Elements)
+                                                              .SelectMany(x => x)
+                                                              .Where(elem => modifElemIds.Contains(elem.Id));
+
+            if (elemsToUpdate.Count() > 0) {
+                Document doc = args.GetDocument();
+                Dictionary<ElementId, Element> modifElem = getElementsById(doc, elemsToUpdate.Select(elem => elem.Id));
+
+                Dictionary<Leader, XYZ> updateInfo = new Dictionary<Leader, XYZ>();
+
+                foreach (var item in elemsToUpdate) {
+                    item.Position = Helper.GetElementPosition(modifElem[item.Id]);
+                    updateInfo[item.Leader] = item.Position;
+                }
+
+                Main.ExternalApp.Transactions.UpdateLeader(doc, updateInfo);
+            }
+
+
+            IEnumerable<Comment> updatedComments = Comments.Where(comm => modifElemIds.Contains(comm.TextNoteId));
+            
+            if (updatedComments.Count() > 0) {
+                Document doc = args.GetDocument();
+                var tmp = ((TextNote)doc.GetElement(updatedComments.First().TextNoteId)).GetLeaders();
+
+                Dictionary<Leader, XYZ> updateInfo = new Dictionary<Leader, XYZ>();
+
+                // It's necessary to recreate leaders because Revit creates new leaders each time when TextNote is moved
+                // Error is occured when trying to update existed leaders
+                foreach (var comment in updatedComments) {
+                    var textNote = (TextNote)doc.GetElement(comment.TextNoteId);
+                    Main.ExternalApp.Transactions.RemoveLeaders(doc, textNote);
+                    Main.ExternalApp.Transactions.CreateLeader(doc, textNote, comment.Elements);
+                }
+            }
+        }
+
 
         public void addComment(Comment comment) {
             comments.Add(comment);
@@ -60,7 +118,7 @@ namespace TODOComm.Models {
 
         // TODO: write that it's not necessary to check if key exists because it's a private method
         private void updateCommentText(Document doc, IEnumerable<ElementId> textNoteIds) {
-            Dictionary<ElementId, Element> modifiedElem = getWatchableElementById(doc, textNoteIds);
+            Dictionary<ElementId, Element> modifiedElem = getElementsById(doc, textNoteIds);
             Dictionary<ElementId, Comment> commentsToUpdate = getCommentsByTextNoteId(textNoteIds);
 
             foreach (KeyValuePair<ElementId, Element> entry in modifiedElem) {
@@ -70,11 +128,11 @@ namespace TODOComm.Models {
 
         // TODO: write doc
         private bool isWatchForTextNote(ElementId textNoteId) {
-            return this.comments.Any(comm => comm.isTextNoteExist(textNoteId));
+            return comments.Any(comm => comm.isTextNoteExist(textNoteId));
         }
 
         // TODO: write doc
-        private Dictionary<ElementId, Element> getWatchableElementById(Document doc, IEnumerable<ElementId> ids) {
+        private Dictionary<ElementId, Element> getElementsById(Document doc, IEnumerable<ElementId> ids) {
             return ids.Select(elemId => doc.GetElement(elemId)).ToDictionary(elem => elem.Id);
         }
 
