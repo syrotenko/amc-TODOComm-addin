@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using TODOComm.Models;
 using TODOComm.UI;
+using TODOComm;
 
 namespace TODOComm.Commands {
     [Autodesk.Revit.Attributes.Transaction(Autodesk.Revit.Attributes.TransactionMode.Manual)]
@@ -24,7 +25,7 @@ namespace TODOComm.Commands {
             if (selectedIds.Count != 0) {
                 foreach (ElementId elementId in selectedIds) {
                     Element elem = doc.GetElement(elementId);
-                    comment.addElement(new ElementModel(elem.Id, elem.Name));
+                    comment.addElement(new ElementModel(elem.Id, elem.Name, Helper.GetElementLocation(elem)));
                 }
             }
             else {

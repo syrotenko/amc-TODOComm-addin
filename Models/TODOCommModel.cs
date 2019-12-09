@@ -90,8 +90,9 @@ namespace TODOComm.Models {
 
 
         public void RaiseCommentEditApply(object sender) {
+            // TODO: cast only once
             if (!isCommentExists((Comment)sender)) { 
-                this.addComment((Comment)sender);
+                addComment((Comment)sender);
                 Main.ExternalApp.Transactions.CreateTextNote((Comment)sender);
             }
         }

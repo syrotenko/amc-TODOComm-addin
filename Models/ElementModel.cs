@@ -3,9 +3,10 @@ using System.ComponentModel;
 
 namespace TODOComm.Models {
     public class ElementModel : INotifyPropertyChanged {
-        public ElementModel (ElementId id, string name) {
+        public ElementModel (ElementId id, string name, XYZ position) {
             Id = id;
             Name = name;
+            Position = position;
         }
 
 
@@ -31,6 +32,35 @@ namespace TODOComm.Models {
             }
         }
 
+        private XYZ position;
+        public XYZ Position {
+            get {
+                return position;
+            }
+            set {
+                position = value;
+                OnPropertyChanged(PropertyNames.POSITION);
+            }
+        }
+
+
+        private Leader leader;
+        public Leader Leader {
+            get {
+                return leader;
+            }
+
+            set {
+                leader = value;
+                OnPropertyChanged(PropertyNames.LEADER);
+            }
+        }
+
+        public void createLeader(TextNote textNote) {
+            Leader = textNote.AddLeader(TextNoteLeaderTypes.TNLT_STRAIGHT_L);
+            Leader.End = Position;
+        }
+
 
         public event PropertyChangedEventHandler PropertyChanged;
         public void OnPropertyChanged(string propertyName) {
@@ -40,6 +70,8 @@ namespace TODOComm.Models {
         public static class PropertyNames {
             public const string ID = "Id";
             public const string NAME = "Name";
+            public const string POSITION = "Position";
+            public const string LEADER = "Leader";
         }
     }
 }

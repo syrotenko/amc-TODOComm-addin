@@ -35,6 +35,12 @@ namespace TODOComm.Models {
             }
             set {
                 this.textNoteId = value;
+                
+                // It's necessary to create leaders here because TextNote is required
+                foreach (ElementModel element in Elements) {
+                    element.createLeader((TextNote)doc.GetElement(TextNoteId));
+                }
+                
                 OnPropertyChanged(PropertyNames.TEXTNOTE_ID);
             }
         }
@@ -118,7 +124,7 @@ namespace TODOComm.Models {
             Reference objRef = selection.PickObject(ObjectType.Element, Prompts.SELECT_OBJ);
             Element elem = doc.GetElement(objRef);
 
-            addElement(new ElementModel(elem.Id, elem.Name));
+            addElement(new ElementModel(elem.Id, elem.Name, Helper.GetElementLocation(elem)));
         }
 
         public void pickMultiElements () {
@@ -126,7 +132,7 @@ namespace TODOComm.Models {
             IList<Reference> objRefs = selection.PickObjects(ObjectType.Element, Prompts.SELECT_OBJS);
             foreach (Reference objRef in objRefs) {
                 Element elem = doc.GetElement(objRef);
-                addElement(new ElementModel(elem.Id, elem.Name));
+                addElement(new ElementModel(elem.Id, elem.Name, Helper.GetElementLocation(elem)));
             }
         }
 

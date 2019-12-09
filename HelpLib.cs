@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Autodesk.Revit.DB;
+using System;
+using System.Diagnostics;
 using System.IO;
 using System.Windows.Media.Imaging;
 
@@ -10,6 +12,22 @@ namespace TODOComm {
 
         public static string getFullPath(string path) {
             return Directory.GetCurrentDirectory() + path;
+        }
+
+        public static XYZ GetElementLocation(Element elem) {
+            Location loc = elem.Location;
+
+            LocationPoint lp = loc as LocationPoint;
+            if (null != lp) {
+                return lp.Point;
+            }
+            else {
+                LocationCurve lc = loc as LocationCurve;
+
+                Debug.WriteLine("expected location to be either point or curve");
+                    
+                return lc.Curve.GetEndPoint(0);
+            }
         }
     }
 
