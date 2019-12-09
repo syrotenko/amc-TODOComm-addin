@@ -1,7 +1,6 @@
 ﻿using Autodesk.Revit.DB;
 using Autodesk.Revit.UI;
 using Autodesk.Revit.UI.Selection;
-using System.ComponentModel;
 using System.Reflection;
 using TODOComm.Models;
 using TODOComm.UI;
@@ -9,7 +8,7 @@ using TODOComm.UI;
 namespace TODOComm.Commands {
     [Autodesk.Revit.Attributes.Transaction(Autodesk.Revit.Attributes.TransactionMode.Manual)]
     [Autodesk.Revit.Attributes.Regeneration(Autodesk.Revit.Attributes.RegenerationOption.Manual)]
-    class MakeNoteWithoutObjCommand : CommandParent, IExternalCommand, INotifyPropertyChanged {
+    class MakeNoteWithoutObjCommand : IExternalCommand {
 
         public Result Execute(ExternalCommandData commandData, ref string message, ElementSet elements) {
             UIDocument uiDoc = commandData.Application.ActiveUIDocument;
@@ -32,60 +31,7 @@ namespace TODOComm.Commands {
             win.WindowStartupLocation = System.Windows.WindowStartupLocation.CenterScreen;
             win.ShowDialog();
 
-            if (win.viewModel.isApply) {
-                // Create a comment
-
-                TextNote note;
-
-                using (Transaction trn = new Transaction(doc)) {
-                    trn.Start(TransactionNames.CREATE_TEXTNOTE_CUSTOM);
-
-                    note = TextNote.Create(doc, uiDoc.ActiveView.Id, comment.CommentPosition, comment.CommentText,
-                                           doc.GetDefaultElementTypeId(ElementTypeGroup.TextNoteType));
-
-                    comment.TextNoteId = note.Id;
-
-                    trn.Commit();
-                }
-            }
-            else {
-                return Result.Cancelled;
-            }
-
-            CommentObj = comment;
             return Result.Succeeded;
-        }
-
-
-        private Comment commentObj;
-        public override Comment CommentObj {
-            get {
-                return commentObj;
-            }
-
-            set {
-                commentObj = value;
-                OnPropertyChanged(PropertyNames.COMMENT_OBJ);
-            }
-        }
-
-
-        public static event PropertyChangedEventHandler PropertyChangedCustom;
-        public event PropertyChangedEventHandler PropertyChanged {
-            add {
-                PropertyChangedCustom += value;
-            }
-            remove {
-                PropertyChangedCustom -= value;
-            }
-        }
-        public void OnPropertyChanged(string propertyName) {
-            PropertyChangedCustom?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
-
-
-        public static class PropertyNames {
-            public const string COMMENT_OBJ = "CommentObj";
         }
 
 

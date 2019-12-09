@@ -1,13 +1,17 @@
-﻿using System;
+﻿using Autodesk.Revit.DB;
+using Autodesk.Revit.UI.Selection;
+using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Windows.Input;
 using TODOComm.Models;
+using TODOComm.UI;
 
 namespace TODOComm.ViewModel {
     public class CommentEditViewModel : INotifyPropertyChanged {
         public CommentEditViewModel(Comment comment) {
             this.Comment = comment;
-            
+
             this.setupCommands();
 
             Comment.PropertyChanged += RaisePropertyChanged;
@@ -16,7 +20,9 @@ namespace TODOComm.ViewModel {
         public CommentEditCommand ApplyChangesCommand { get; set; }
         public CommentEditCommand CancelChangesCommand { get; set; }
         public CommentEditCommand CloseWindowCommand { get; set; }
-        
+        public CommentEditCommand AddElementCommand { get; set; }
+        public CommentEditCommand RemoveElementCommand { get; set; }
+
         public Comment Comment { get; set; }
 
         public bool isApply { get; private set; }
@@ -41,10 +47,26 @@ namespace TODOComm.ViewModel {
 
             this.CancelChangesCommand = new CommentEditCommand() {
                 act = () => {
-                    this.isApply = false;
-                    this.Comment.cancelChanges();
-                    this.CloseWindowCommand.Execute();
+                    isApply = false;
+                    Comment.cancelChanges();
+                    CloseWindowCommand.Execute();
                 }
+            };
+
+            this.AddElementCommand = new CommentEditCommand() {
+                act = () => {
+                    CloseWindowCommand.Execute();
+                    Comment.selectMultiElements();
+                    CommentEdit win = new CommentEdit(Comment);
+                    win.WindowStartupLocation = System.Windows.WindowStartupLocation.CenterScreen;
+                    win.ShowDialog();
+                },
+            };
+
+            this.RemoveElementCommand = new CommentEditCommand() {
+                act = () => {
+                },
+                //func = () => TODOCommModel.getInstance().isCommentExists(this.Comment)
             };
         }
 

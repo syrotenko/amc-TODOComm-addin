@@ -53,6 +53,11 @@ namespace TODOComm.Models {
             comments.Remove(comment);
         }
 
+        public bool isCommentExists(Comment comment) {
+            return Comments.Contains(comment);
+        }
+
+
         // TODO: write that it's not necessary to check if key exists because it's a private method
         private void updateCommentText(Document doc, IEnumerable<ElementId> textNoteIds) {
             Dictionary<ElementId, Element> modifiedElem = getWatchableElementById(doc, textNoteIds);
@@ -81,6 +86,14 @@ namespace TODOComm.Models {
         // TODO: write doc
         private Comment getCommentByTextNoteId(ElementId textNoteId) {
             return this.comments.Where(comm => comm.isTextNoteExist(textNoteId)).First();
+        }
+
+
+        public void RaiseCommentEditApply(object sender) {
+            if (!isCommentExists((Comment)sender)) { 
+                this.addComment((Comment)sender);
+                Main.ExternalApp.Transactions.CreateTextNote((Comment)sender);
+            }
         }
 
 

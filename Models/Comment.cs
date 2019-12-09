@@ -1,5 +1,6 @@
 ﻿using Autodesk.Revit.DB;
 using Autodesk.Revit.UI;
+using Autodesk.Revit.UI.Selection;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -78,8 +79,8 @@ namespace TODOComm.Models {
         }
 
 
-        private Document doc;
-        private UIDocument uiDoc;
+        public Document doc;
+        public UIDocument uiDoc;
 
 
         public void addElement(ElementModel element) {
@@ -91,6 +92,7 @@ namespace TODOComm.Models {
         }
 
         public void applyChanges() {
+            TODOCommModel.getInstance().RaiseCommentEditApply(this);
             prevCommentText = CommentText;
             if (TextNoteId != null && doc != null) {
                 Main.ExternalApp.Transactions.ChangeTextNoteText(doc, TextNoteId, CommentText);
@@ -111,15 +113,24 @@ namespace TODOComm.Models {
             uiDoc.Selection.SetElementIds(elemIdsToHighlight);
         }
 
+        public void selectMultiElements () {
+            try {
+                Selection selection = uiDoc.Selection;
+                IList<Reference> objRefs = selection.PickObjects(ObjectType.Element, Prompts.SELECT_OBJS);
+                foreach (Reference objRef in objRefs) {
+                    Element elem = doc.GetElement(objRef);
+                    addElement(new ElementModel(elem.Id, elem.Name));
+                }
+            }
+            catch (Autodesk.Revit.Exceptions.OperationCanceledException) { }
+        }
+
         private void showElements() {
             Main.ExternalApp.Transactions.ShowElements(doc, uiDoc.ActiveView, new List<ElementId>() { TextNoteId });
-            //uiDoc.ActiveView.UnhideElements(new List<ElementId>() { TextNoteId });
         }
 
         private void hideElements() {
             Main.ExternalApp.Transactions.HideElements(doc, uiDoc.ActiveView, new List<ElementId>() { TextNoteId });
-            //Main.ExternalApp.hideElements(doc, uiDoc.ActiveView, new List<ElementId>() { TextNoteId });
-            //uiDoc.ActiveView.HideElements(Elements.Select(elem => elem.Id).ToList());
         }
 
 

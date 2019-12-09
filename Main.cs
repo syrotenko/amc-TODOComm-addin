@@ -4,7 +4,6 @@ using Autodesk.Revit.DB.Events;
 using Autodesk.Revit.UI;
 using System;
 using System.Collections.Generic;
-using TODOComm.Commands;
 using TODOComm.Models;
 using TODOComm.UI;
 
@@ -26,6 +25,7 @@ namespace TODOComm {
         private TODOCommModel todoModel;
         private UIControlledApplication application;
 
+        private ExternalAppEvent createTextNoteHandler;
         private ExternalAppEvent changeTextNoteTextHandler;
         private ExternalAppEvent showElementsHandler;
         private ExternalAppEvent hideElementsHandler;
@@ -50,12 +50,9 @@ namespace TODOComm {
             return Result.Succeeded;
         }
 
-        public void newCommentAdded(object sender, EventArgs args) {
-            todoModel.addComment(((CommandParent)sender).CommentObj);
-        }
-
 
         public class TransactionsAvailable {
+            public Action<Comment> CreateTextNote = Main.ExternalApp.createTextNote;
             public Action<Document, ElementId, string> ChangeTextNoteText = Main.ExternalApp.changeTextNoteText;
             public Action<Document, View, ICollection<ElementId>> ShowElements = Main.ExternalApp.showElements;
             public Action<Document, View, ICollection<ElementId>> HideElements = Main.ExternalApp.hideElements;
@@ -82,6 +79,7 @@ namespace TODOComm {
         }
 
         private void createExternalEvents() {
+            this.createTextNoteHandler = new ExternalAppEvent(new CreateTextNoteHandler());
             this.changeTextNoteTextHandler = new ExternalAppEvent(new ChangeTextNoteTextHandler());
             this.showElementsHandler = new ExternalAppEvent(new ShowElementsHandler());
             this.hideElementsHandler = new ExternalAppEvent(new HideElementsHandler());
@@ -89,12 +87,14 @@ namespace TODOComm {
 
         private void registerEventsAndHandlers() {
             registerDocumentChanged(new EventHandler<DocumentChangedEventArgs>(todoModel.wasChangeHandler));
-            MakeNoteWithoutObjCommand.PropertyChangedCustom += newCommentAdded;
-            MakeNoteSingleObjCommand.PropertyChangedCustom += newCommentAdded;
-            MakeNoteMultiObjCommand.PropertyChangedCustom += newCommentAdded;
-            MakeNoteSelectedObjCommand.PropertyChangedCustom += newCommentAdded;
         }
 
+
+        private void createTextNote(Comment comment) {
+            ((CreateTextNoteHandler)createTextNoteHandler.handler).comment = comment;
+
+            this.createTextNoteHandler.Raise();
+        }
 
         private void changeTextNoteText(Document doc, ElementId textNoteId, string newTextValue) {
             ((ChangeTextNoteTextHandler)changeTextNoteTextHandler.handler).doc = doc;
@@ -215,6 +215,33 @@ namespace TODOComm {
             }
         }
         public string GetName() {
+            return TransactionNames.EDIT_TEXT_CUSTOM + " event";
+        }
+    }
+
+    class CreateTextNoteHandler : IExternalEventHandler {
+        public Comment comment;
+
+        public void Execute(UIApplication uiapp) {
+            // TODO: check and textNoteId
+            if (comment.doc != null) {
+                TextNote note;
+
+                using (Transaction trn = new Transaction(comment.doc)) {
+                    trn.Start(TransactionNames.CREATE_TEXTNOTE_CUSTOM);
+
+                    note = TextNote.Create(comment.doc, comment.uiDoc.ActiveView.Id, comment.CommentPosition, comment.CommentText,
+                                           comment.doc.GetDefaultElementTypeId(ElementTypeGroup.TextNoteType));
+
+                    comment.TextNoteId = note.Id;
+
+                    trn.Commit();
+                }
+            }
+        }
+
+        public string GetName() {
+            // TODO: change name of event
             return TransactionNames.EDIT_TEXT_CUSTOM + " event";
         }
     }
