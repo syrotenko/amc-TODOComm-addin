@@ -22,7 +22,7 @@ namespace TODOComm.UI {
 
             // TODO: change img
             pushButtonData.Image = Helper.getBitmapImage(@"\resources\showPanel_16x16.png");
-            pushButtonData.LargeImage = Helper.getBitmapImage(@"\resources\showPanel_32x32.png");
+            pushButtonData.LargeImage = Helper.getBitmapImage(@"\resources\hidePanel_32x32.png");
 
             return pushButtonData;
         }
@@ -34,7 +34,7 @@ namespace TODOComm.UI {
 
             // TODO: change img
             pushButtonData.Image = Helper.getBitmapImage(@"\resources\showPanel_16x16.png");
-            pushButtonData.LargeImage = Helper.getBitmapImage(@"\resources\showPanel_32x32.png");
+            pushButtonData.LargeImage = Helper.getBitmapImage(@"\resources\withoutObj_32x32.png");
 
             return pushButtonData;
         }
@@ -46,7 +46,7 @@ namespace TODOComm.UI {
 
             // TODO: change img
             pushButtonData.Image = Helper.getBitmapImage(@"\resources\showPanel_16x16.png");
-            pushButtonData.LargeImage = Helper.getBitmapImage(@"\resources\showPanel_32x32.png");
+            pushButtonData.LargeImage = Helper.getBitmapImage(@"\resources\singleObj_32x32.png");
 
             return pushButtonData;
         }
@@ -58,7 +58,7 @@ namespace TODOComm.UI {
 
             // TODO: change img
             pushButtonData.Image = Helper.getBitmapImage(@"\resources\showPanel_16x16.png");
-            pushButtonData.LargeImage = Helper.getBitmapImage(@"\resources\showPanel_32x32.png");
+            pushButtonData.LargeImage = Helper.getBitmapImage(@"\resources\multiObj_32x32.png");
 
             return pushButtonData;
         }
