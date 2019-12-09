@@ -67,7 +67,11 @@ namespace TODOComm.ViewModel {
             this.AddElementCommand = new CommentEditCommand() {
                 act = () => {
                     CloseWindowCommand.Execute();
-                    Comment.selectMultiElements();
+                    try {
+                        Comment.pickMultiElements();
+                    }
+                    catch (Autodesk.Revit.Exceptions.OperationCanceledException) { }
+
                     CommentEdit win = new CommentEdit(Comment);
                     win.WindowStartupLocation = System.Windows.WindowStartupLocation.CenterScreen;
                     win.ShowDialog();

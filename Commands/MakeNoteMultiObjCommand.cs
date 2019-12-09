@@ -1,7 +1,6 @@
 ﻿using Autodesk.Revit.DB;
 using Autodesk.Revit.UI;
 using Autodesk.Revit.UI.Selection;
-using System.Collections.Generic;
 using System.Reflection;
 using TODOComm.Models;
 using TODOComm.UI;
@@ -18,13 +17,9 @@ namespace TODOComm.Commands {
 
             Comment comment = new Comment(uiDoc);
 
-            // Choose object
+            // Choose objects
             try {
-                IList<Reference> objRefs = selection.PickObjects(ObjectType.Element, Prompts.SELECT_OBJS);
-                foreach (Reference objRef in objRefs) {
-                    Element elem = doc.GetElement(objRef);
-                    comment.addElement(new ElementModel(elem.Id, elem.Name));
-                }
+                comment.pickMultiElements();
             }
             catch (Autodesk.Revit.Exceptions.OperationCanceledException) {
                 return Result.Cancelled;

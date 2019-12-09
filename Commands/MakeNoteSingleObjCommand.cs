@@ -13,16 +13,12 @@ namespace TODOComm.Commands {
         public Result Execute(ExternalCommandData commandData, ref string message, ElementSet elements) {
             UIDocument uiDoc = commandData.Application.ActiveUIDocument;
             Selection selection = uiDoc.Selection;
-            Document doc = uiDoc.Document;
 
             Comment comment = new Comment(uiDoc);
 
             // Choose object
             try {
-                Reference objRef = selection.PickObject(ObjectType.Element, Prompts.SELECT_OBJ);
-                Element elem = doc.GetElement(objRef);
-
-                comment.addElement(new ElementModel(elem.Id, elem.Name));
+                comment.pickElement();
             }
             catch (Autodesk.Revit.Exceptions.OperationCanceledException) {
                 return Result.Cancelled;

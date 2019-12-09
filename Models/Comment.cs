@@ -113,16 +113,21 @@ namespace TODOComm.Models {
             uiDoc.Selection.SetElementIds(elemIdsToHighlight);
         }
 
-        public void selectMultiElements () {
-            try {
-                Selection selection = uiDoc.Selection;
-                IList<Reference> objRefs = selection.PickObjects(ObjectType.Element, Prompts.SELECT_OBJS);
-                foreach (Reference objRef in objRefs) {
-                    Element elem = doc.GetElement(objRef);
-                    addElement(new ElementModel(elem.Id, elem.Name));
-                }
+        public void pickElement() {
+            Selection selection = uiDoc.Selection;
+            Reference objRef = selection.PickObject(ObjectType.Element, Prompts.SELECT_OBJ);
+            Element elem = doc.GetElement(objRef);
+
+            addElement(new ElementModel(elem.Id, elem.Name));
+        }
+
+        public void pickMultiElements () {
+            Selection selection = uiDoc.Selection;
+            IList<Reference> objRefs = selection.PickObjects(ObjectType.Element, Prompts.SELECT_OBJS);
+            foreach (Reference objRef in objRefs) {
+                Element elem = doc.GetElement(objRef);
+                addElement(new ElementModel(elem.Id, elem.Name));
             }
-            catch (Autodesk.Revit.Exceptions.OperationCanceledException) { }
         }
 
         private void showElements() {
