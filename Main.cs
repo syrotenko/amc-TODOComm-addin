@@ -121,7 +121,7 @@ namespace TODOComm {
 
             handler.doc = doc;
             handler.view = view;
-            handler.elementIds = elementIds;
+            handler.elemIds = elementIds;
 
             this.showElementsHandler.Raise();
         }
@@ -131,7 +131,7 @@ namespace TODOComm {
 
             handler.doc = doc;
             handler.view = view;
-            handler.elementIds = elementIds;
+            handler.elemIds = elementIds;
 
             this.hideElementsHandler.Raise();
         }
@@ -140,7 +140,7 @@ namespace TODOComm {
 
             handler.doc = doc;
             handler.textNote = textNote;
-            handler.elements = elements;
+            handler.elems = elements;
 
             this.createLeaderHandler.Raise();
         }
@@ -185,52 +185,54 @@ namespace TODOComm {
     class ShowElementsHandler : IExternalEventHandler {
         public Document doc;
         public View view;
-        public ICollection<ElementId> elementIds;
+        public ICollection<ElementId> elemIds;
 
         public void Execute(UIApplication uiapp) {
-            // TODO: check and textNoteId
-            if (doc != null) {
-                using (var tran = new Transaction(doc, "Test")) {
-                    tran.Start();
 
-                    view.UnhideElements(elementIds);
+            if (doc != null && (view != null && elemIds != null)) {
 
-                    tran.Commit();
+                using (var trn = new Transaction(doc, TransactionNames.SHOW_ELEMENTS_CUSTOM)) {
+                    trn.Start();
+
+                    view.UnhideElements(elemIds);
+
+                    trn.Commit();
                 }
 
                 doc = null;
                 view = null;
-                elementIds = null;
+                elemIds = null;
             }
         }
         public string GetName() {
-            return TransactionNames.EDIT_TEXT_CUSTOM + " event";
+            return TransactionNames.SHOW_ELEMENTS_CUSTOM + " event";
         }
     }
 
     class HideElementsHandler : IExternalEventHandler {
         public Document doc;
         public View view;
-        public ICollection<ElementId> elementIds;
+        public ICollection<ElementId> elemIds;
 
         public void Execute(UIApplication uiapp) {
-            // TODO: check and textNoteId
-            if (doc != null) {
-                using (var tran = new Transaction(doc, "Test")) {
-                    tran.Start();
+            
+            if (doc != null && (view != null && elemIds != null)) {
 
-                    view.HideElements(elementIds);
+                using (var trn = new Transaction(doc, TransactionNames.HIDE_ELEMENTS_CUSTOM)) {
+                    trn.Start();
 
-                    tran.Commit();
+                    view.HideElements(elemIds);
+
+                    trn.Commit();
                 }
 
                 doc = null;
                 view = null;
-                elementIds = null;
+                elemIds = null;
             }
         }
         public string GetName() {
-            return TransactionNames.EDIT_TEXT_CUSTOM + " event";
+            return TransactionNames.HIDE_ELEMENTS_CUSTOM + " event";
         }
     }
 
@@ -240,8 +242,9 @@ namespace TODOComm {
         public string newTextValue;
 
         public void Execute(UIApplication uiapp) {
-            // TODO: check and textNoteId
-            if (doc != null && !string.IsNullOrEmpty(newTextValue)) {
+            
+            if (doc != null && (!string.IsNullOrEmpty(newTextValue) && textNoteId != null)) {
+                
                 using (Transaction trn = new Transaction(doc)) {
                     trn.Start(TransactionNames.EDIT_TEXT_CUSTOM);
                     
@@ -264,15 +267,14 @@ namespace TODOComm {
         public Comment comment;
 
         public void Execute(UIApplication uiapp) {
-            // TODO: check and textNoteId
-            if (comment.doc != null) {
-                TextNote note;
+            
+            if (comment != null) {
 
                 using (Transaction trn = new Transaction(comment.doc)) {
                     trn.Start(TransactionNames.CREATE_TEXTNOTE_CUSTOM);
 
-                    note = TextNote.Create(comment.doc, comment.uiDoc.ActiveView.Id, comment.CommentPosition, comment.CommentText,
-                                           comment.doc.GetDefaultElementTypeId(ElementTypeGroup.TextNoteType));
+                    TextNote note = TextNote.Create(comment.doc, comment.uiDoc.ActiveView.Id, comment.CommentPosition, comment.CommentText,
+                                                    comment.doc.GetDefaultElementTypeId(ElementTypeGroup.TextNoteType));
 
                     comment.TextNoteId = note.Id;
 
@@ -282,23 +284,22 @@ namespace TODOComm {
         }
 
         public string GetName() {
-            // TODO: change name of event
-            return TransactionNames.EDIT_TEXT_CUSTOM + " event";
+            return TransactionNames.CREATE_TEXTNOTE_CUSTOM + " event";
         }
     }
 
     class CreateLeadersHandler : IExternalEventHandler {
         public Document doc;
         public TextNote textNote;
-        public IEnumerable<ElementModel> elements;
+        public IEnumerable<ElementModel> elems;
 
         public void Execute(UIApplication uiapp) {
-            if (doc != null) {
+            if (doc != null && (textNote != null && elems != null)) {
 
                 using (Transaction trn = new Transaction(doc)) {
-                    trn.Start(TransactionNames.CREATE_TEXTNOTE_CUSTOM);
+                    trn.Start(TransactionNames.CREATE_LEADERS_CUSTOM);
 
-                    foreach (var element in elements) {
+                    foreach (var element in elems) {
                         element.Leader = textNote.AddLeader(TextNoteLeaderTypes.TNLT_STRAIGHT_L);
                         element.Leader.End = element.Position;
                     }
@@ -309,8 +310,7 @@ namespace TODOComm {
         }
 
         public string GetName() {
-            // TODO: change name of event
-            return TransactionNames.EDIT_TEXT_CUSTOM + " event";
+            return TransactionNames.CREATE_LEADERS_CUSTOM + " event";
         }
     }
 
@@ -319,9 +319,10 @@ namespace TODOComm {
         public TextNote textNote;
 
         public void Execute(UIApplication uiapp) {
-            if (doc != null) {
+            if (doc != null && textNote != null) {
+                
                 using (Transaction trn = new Transaction(doc)) {
-                    trn.Start(TransactionNames.CREATE_TEXTNOTE_CUSTOM);
+                    trn.Start(TransactionNames.REMOVE_LEADERS_CUSTOM);
 
                     textNote.RemoveLeaders();
 
@@ -331,8 +332,7 @@ namespace TODOComm {
         }
 
         public string GetName() {
-            // TODO: change name of event
-            return TransactionNames.EDIT_TEXT_CUSTOM + " event";
+            return TransactionNames.REMOVE_LEADERS_CUSTOM + " event";
         }
     }
 
@@ -341,11 +341,10 @@ namespace TODOComm {
         public Dictionary<Leader, XYZ> updateInfo;
 
         public void Execute(UIApplication uiapp) {
-            if (doc != null) {
-                TextNote note;
+            if (doc != null && updateInfo != null) {
 
                 using (Transaction trn = new Transaction(doc)) {
-                    trn.Start(TransactionNames.CREATE_TEXTNOTE_CUSTOM);
+                    trn.Start(TransactionNames.UPDATE_LEADERS_CUSTOM);
 
                     foreach (KeyValuePair<Leader, XYZ> entry in updateInfo) {
                         entry.Key.End = entry.Value;
@@ -357,8 +356,7 @@ namespace TODOComm {
         }
 
         public string GetName() {
-            // TODO: change name of event
-            return TransactionNames.EDIT_TEXT_CUSTOM + " event";
+            return TransactionNames.UPDATE_LEADERS_CUSTOM + " event";
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using Autodesk.Revit.DB;
 using Autodesk.Revit.DB.Events;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -115,43 +116,22 @@ namespace TODOComm.Models {
             return Comments.Contains(comment);
         }
 
-
-        // TODO: write that it's not necessary to check if key exists because it's a private method
-        private void updateCommentText(Document doc, IEnumerable<ElementId> textNoteIds) {
-            Dictionary<ElementId, Element> modifiedElem = getElementsById(doc, textNoteIds);
-            Dictionary<ElementId, Comment> commentsToUpdate = getCommentsByTextNoteId(textNoteIds);
-
-            foreach (KeyValuePair<ElementId, Element> entry in modifiedElem) {
-                commentsToUpdate[entry.Key].CommentText = ((TextNote)entry.Value).Text;
-            }
-        }
-
-        // TODO: write doc
-        private bool isWatchForTextNote(ElementId textNoteId) {
-            return comments.Any(comm => comm.isTextNoteExist(textNoteId));
-        }
-
         // TODO: write doc
         private Dictionary<ElementId, Element> getElementsById(Document doc, IEnumerable<ElementId> ids) {
             return ids.Select(elemId => doc.GetElement(elemId)).ToDictionary(elem => elem.Id);
         }
 
-        // TODO: write doc
-        private Dictionary<ElementId, Comment> getCommentsByTextNoteId(IEnumerable<ElementId> textNoteIds) {
-            return textNoteIds.Select(elem => this.getCommentByTextNoteId(elem)).ToDictionary(elem => elem.TextNoteId);
-        }
-
-        // TODO: write doc
-        private Comment getCommentByTextNoteId(ElementId textNoteId) {
-            return this.comments.Where(comm => comm.isTextNoteExist(textNoteId)).First();
-        }
-
 
         public void RaiseCommentEditApply(object sender) {
-            // TODO: cast only once
-            if (!isCommentExists((Comment)sender)) { 
-                addComment((Comment)sender);
-                Main.ExternalApp.Transactions.CreateTextNote((Comment)sender);
+            if (sender is Comment comment) {
+                if (!isCommentExists(comment)) {
+                    addComment(comment);
+                    Main.ExternalApp.Transactions.CreateTextNote(comment);
+                }
+            }
+            else {
+                // TODO: write own exeption type
+                throw new Exception("sender is not a Comment type");
             }
         }
 

@@ -1,6 +1,5 @@
 ﻿using Autodesk.Revit.DB;
 using System;
-using System.Diagnostics;
 using System.IO;
 using System.Windows.Media.Imaging;
 
@@ -41,5 +40,10 @@ namespace TODOComm {
         public const string DRAG = "Drag";
         public const string EDIT_TEXT_CUSTOM = "Edit Text_TODOComm";
         public const string CREATE_TEXTNOTE_CUSTOM = "Create TextNote_TODOComm";
+        public const string SHOW_ELEMENTS_CUSTOM = "ShowElements_TODOComm";
+        public const string HIDE_ELEMENTS_CUSTOM = "HideElements_TODOComm";
+        public const string CREATE_LEADERS_CUSTOM = "CreateLeaders_TODOComm";
+        public const string REMOVE_LEADERS_CUSTOM = "RemoveLeaders_TODOComm";
+        public const string UPDATE_LEADERS_CUSTOM = "UpdateLeaders_TODOComm";
     }
 }
