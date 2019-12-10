@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
+using System.Windows.Threading;
 
 namespace TODOComm.Models {
     class TODOCommModel : INotifyPropertyChanged {
@@ -81,7 +82,7 @@ namespace TODOComm.Models {
                     updateInfo[item.Leader] = item.Position;
                 }
 
-                Main.ExternalApp.Transactions.UpdateLeaders(doc, updateInfo);
+                Main.ExternalApp.Transactions.UpdateLeader(doc, updateInfo);
             }
 
 
@@ -91,15 +92,17 @@ namespace TODOComm.Models {
                 Document doc = args.GetDocument();
                 var tmp = ((TextNote)doc.GetElement(updatedComments.First().TextNoteId)).GetLeaders();
 
-                Dictionary<Leader, XYZ> updateInfo = new Dictionary<Leader, XYZ>();
-
                 // It's necessary to recreate leaders because Revit creates new leaders each time when TextNote is moved
                 // Error is occured when trying to update existed leaders
+                Main.ExternalApp.Transactions.RemoveLeaders(doc, updatedComments.Select(comment => (TextNote)doc.GetElement(comment.TextNoteId)));
+                
+                Dictionary<TextNote, IEnumerable<ElementModel>> updateInfo = new Dictionary<TextNote, IEnumerable<ElementModel>>();
+
                 foreach (var comment in updatedComments) {
-                    var textNote = (TextNote)doc.GetElement(comment.TextNoteId);
-                    Main.ExternalApp.Transactions.RemoveLeaders(doc, textNote);
-                    Main.ExternalApp.Transactions.CreateLeaders(doc, textNote, comment.Elements);
+                    updateInfo[(TextNote)doc.GetElement(comment.TextNoteId)] = comment.Elements;
                 }
+
+                Main.ExternalApp.Transactions.CreateLeaders(doc, updateInfo);
             }
         }
 

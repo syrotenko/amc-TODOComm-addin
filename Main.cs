@@ -61,9 +61,9 @@ namespace TODOComm {
             public Action<Document, ElementId, string> ChangeTextNoteText = Main.ExternalApp.changeTextNoteText;
             public Action<Document, View, ICollection<ElementId>> ShowElements = Main.ExternalApp.showElements;
             public Action<Document, View, ICollection<ElementId>> HideElements = Main.ExternalApp.hideElements;
-            public Action<Document, TextNote, IEnumerable<ElementModel>> CreateLeaders = Main.ExternalApp.createLeaders;
-            public Action<Document, TextNote> RemoveLeaders = Main.ExternalApp.removeLeaders;
-            public Action<Document, Dictionary<Leader, XYZ>> UpdateLeaders = Main.ExternalApp.updateLeaders;
+            public Action<Document, Dictionary<TextNote, IEnumerable<ElementModel>>> CreateLeaders = Main.ExternalApp.createLeaders;
+            public Action<Document, IEnumerable<TextNote>> RemoveLeaders = Main.ExternalApp.removeLeaders;
+            public Action<Document, Dictionary<Leader, XYZ>> UpdateLeader = Main.ExternalApp.updateLeaders;
         }
 
 
@@ -135,20 +135,19 @@ namespace TODOComm {
 
             this.hideElementsHandler.Raise();
         }
-        private void createLeaders(Document doc, TextNote textNote, IEnumerable<ElementModel> elements) {
+        private void createLeaders(Document doc, Dictionary<TextNote, IEnumerable<ElementModel>> updateInfo) {
             CreateLeadersHandler handler = (CreateLeadersHandler)createLeadersHandler.handler;
 
             handler.doc = doc;
-            handler.textNote = textNote;
-            handler.elems = elements;
+            handler.updateInfo = updateInfo;
 
             this.createLeadersHandler.Raise();
         }
-        private void removeLeaders(Document doc, TextNote textNote) {
+        private void removeLeaders(Document doc, IEnumerable<TextNote> textNotes) {
             RemoveLeadersHandler handler = (RemoveLeadersHandler)removeLeadersHandler.handler;
 
             handler.doc = doc;
-            handler.textNote = textNote;
+            handler.textNotes = textNotes;
 
             this.removeLeadersHandler.Raise();
         }
@@ -290,18 +289,22 @@ namespace TODOComm {
 
     class CreateLeadersHandler : IExternalEventHandler {
         public Document doc;
-        public TextNote textNote;
-        public IEnumerable<ElementModel> elems;
+        public Dictionary<TextNote, IEnumerable<ElementModel>> updateInfo;
 
         public void Execute(UIApplication uiapp) {
-            if (doc != null && (textNote != null && elems != null)) {
+            if (doc != null && updateInfo != null) {
 
                 using (Transaction trn = new Transaction(doc)) {
-                    trn.Start(TransactionNames.CREATE_LEADERS_CUSTOM);
+                    trn.Start(TransactionNames.CREATE_LEADERS_CUSTOM + Guid.NewGuid().ToString());
 
-                    foreach (var element in elems) {
-                        element.Leader = textNote.AddLeader(TextNoteLeaderTypes.TNLT_STRAIGHT_L);
-                        element.Leader.End = element.Position;
+                    foreach (KeyValuePair<TextNote, IEnumerable<ElementModel>> entry in updateInfo) {
+                        TextNote textNote = entry.Key;
+                        IEnumerable<ElementModel> elems = entry.Value;
+
+                        foreach (var element in elems) {
+                            element.Leader = textNote.AddLeader(TextNoteLeaderTypes.TNLT_STRAIGHT_L);
+                            element.Leader.End = element.Position;
+                        }
                     }
 
                     trn.Commit();
@@ -316,15 +319,17 @@ namespace TODOComm {
 
     class RemoveLeadersHandler : IExternalEventHandler {
         public Document doc;
-        public TextNote textNote;
+        public IEnumerable<TextNote> textNotes;
 
         public void Execute(UIApplication uiapp) {
-            if (doc != null && textNote != null) {
+            if (doc != null && textNotes != null) {
                 
                 using (Transaction trn = new Transaction(doc)) {
                     trn.Start(TransactionNames.REMOVE_LEADERS_CUSTOM);
 
-                    textNote.RemoveLeaders();
+                    foreach (TextNote textNote in textNotes) {
+                        textNote.RemoveLeaders();
+                    }
 
                     trn.Commit();
                 }

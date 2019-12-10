@@ -36,10 +36,15 @@ namespace TODOComm.Models {
             }
             set {
                 this.textNoteId = value;
-                
+
                 // It's necessary to create leaders here because TextNote is required
-                if (IsVisibleLeaders)
-                    Main.ExternalApp.Transactions.CreateLeaders(doc, (TextNote)doc.GetElement(TextNoteId), Elements);
+                if (IsVisibleLeaders) {
+                    Dictionary<TextNote, IEnumerable<ElementModel>> updateInfo = new Dictionary<TextNote, IEnumerable<ElementModel>>() {
+                        { (TextNote)doc.GetElement(TextNoteId), Elements }
+                    };
+
+                    Main.ExternalApp.Transactions.CreateLeaders(doc, updateInfo);
+                }
 
                 OnPropertyChanged(PropertyNames.TEXTNOTE_ID);
             }
@@ -121,7 +126,11 @@ namespace TODOComm.Models {
         public void addElement(ElementModel element) {
             Elements.Add(element);
             if (TextNoteId != null && IsVisibleLeaders) {
-                Main.ExternalApp.Transactions.CreateLeaders(doc, (TextNote)doc.GetElement(TextNoteId), new List<ElementModel>() { element });
+                Dictionary<TextNote, IEnumerable<ElementModel>> updateInfo = new Dictionary<TextNote, IEnumerable<ElementModel>>() {
+                        { (TextNote)doc.GetElement(TextNoteId), new List<ElementModel>() { element } }
+                    };
+
+                Main.ExternalApp.Transactions.CreateLeaders(doc, updateInfo);
             }
         }
 
@@ -177,11 +186,15 @@ namespace TODOComm.Models {
         }
 
         private void showLeaders() {
-            Main.ExternalApp.Transactions.CreateLeaders(doc, (TextNote)doc.GetElement(TextNoteId), Elements);
+            Dictionary<TextNote, IEnumerable<ElementModel>> updateInfo = new Dictionary<TextNote, IEnumerable<ElementModel>>() {
+                        { (TextNote)doc.GetElement(TextNoteId), Elements }
+                    };
+
+            Main.ExternalApp.Transactions.CreateLeaders(doc, updateInfo);
         }
 
         private void hideLeaders() {
-            Main.ExternalApp.Transactions.RemoveLeaders(doc, (TextNote)doc.GetElement(TextNoteId));
+            Main.ExternalApp.Transactions.RemoveLeaders(doc, new List<TextNote>() { (TextNote)doc.GetElement(TextNoteId) });
         }
 
 
