@@ -12,8 +12,8 @@
             <helpLib:ErrorIdColorConverter x:Key="myDateConverter" />
             
             <DataTemplate x:Key="commentsListDataTemplate">
-                <Grid x:Name="commentRepresenter" Width="{Binding ElementName=commentsLB, Path=Width}"
-                            Background="{Binding ElementName=commentRepresenter, Path=DataContext.Prior, Converter={StaticResource myDateConverter}}">
+                <Grid x:Name="commentRepresenter" Width="300"
+                      Background="{Binding ElementName=commentRepresenter, Path=DataContext.Prior, Converter={StaticResource myDateConverter}}">
                     
                     <Grid.Resources>
                         <Style TargetType="Border" >
