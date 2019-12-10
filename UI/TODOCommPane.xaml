@@ -3,34 +3,57 @@
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+      xmlns:helpLib="clr-namespace:TODOComm"
       mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="800">
     
     <Grid Background="WhiteSmoke">
         <Grid.Resources>
+            <helpLib:ErrorIdColorConverter x:Key="myDateConverter" />
+            
             <DataTemplate x:Key="commentsListDataTemplate">
-                <StackPanel Orientation="Horizontal">
+                <Grid x:Name="commentRepresenter" Width="{Binding ElementName=commentsLB, Path=Width}"
+                            Background="{Binding ElementName=commentRepresenter, Path=DataContext.Prior, Converter={StaticResource myDateConverter}}">
+                    
+                    <Grid.Resources>
+                        <Style TargetType="Border" >
+                            <Setter Property="Padding" Value="5, 5, 5, 0" />
+                        </Style>
+                    </Grid.Resources>
 
-                    <CheckBox IsChecked="{Binding Path=IsVisible}" Height="20" ToolTip="Show/Hide note">
-                        <CheckBox.InputBindings>
-                            <MouseBinding MouseAction="LeftClick" 
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="25"/>
+                        <ColumnDefinition Width="Auto" MaxWidth="200"/>
+                        <ColumnDefinition Width="70"/>
+                    </Grid.ColumnDefinitions>
+
+                    <Border Grid.Column="0">
+                        <CheckBox IsChecked="{Binding Path=IsVisible}" Height="20" ToolTip="Show/Hide note">
+                            <CheckBox.InputBindings>
+                                <MouseBinding MouseAction="LeftClick" 
                                           Command="{Binding DataContext.SetVisibleComm , RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ListBox}}}"
                                           CommandParameter="{Binding ElementName=commentsLB, Path=SelectedItem}"/>
-                        </CheckBox.InputBindings>
-                    </CheckBox>
+                            </CheckBox.InputBindings>
+                        </CheckBox>
+                    </Border>
+                    
+                    <Border Grid.Column="1">
+                        <TextBlock Text="{Binding Path=CommentText}"/>
+                    </Border>
 
-                    <TextBlock Text="{Binding Path=CommentText}"/>
-
-                    <CheckBox IsChecked="{Binding Path=IsVisibleLeaders}" Content="Leaders" Height="20" ToolTip="Show/Hide leaders">
-                        <CheckBox.InputBindings>
-                            <MouseBinding MouseAction="LeftClick" 
+                    <Border Grid.Column="2">
+                        <CheckBox IsChecked="{Binding Path=IsVisibleLeaders}" Content="Leaders" Height="20" ToolTip="Show/Hide leaders">
+                            <CheckBox.InputBindings>
+                                <MouseBinding MouseAction="LeftClick" 
                                           Command="{Binding DataContext.SetVisibleLeaders , RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ListBox}}}"
                                           CommandParameter="{Binding ElementName=commentsLB, Path=SelectedItem}"/>
-                        </CheckBox.InputBindings>
-                    </CheckBox>
-
-                </StackPanel>
+                            </CheckBox.InputBindings>
+                        </CheckBox>
+                    </Border>
+                    
+                </Grid>
             </DataTemplate>
+            
         </Grid.Resources>
 
         <ListBox x:Name="commentsLB"

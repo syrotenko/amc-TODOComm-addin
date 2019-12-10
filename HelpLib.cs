@@ -1,6 +1,9 @@
 ﻿using Autodesk.Revit.DB;
 using System;
+using System.Globalization;
 using System.IO;
+using System.Windows.Data;
+using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
 namespace TODOComm {
@@ -45,5 +48,40 @@ namespace TODOComm {
         public const string CREATE_LEADERS_CUSTOM = "CreateLeaders_TODOComm";
         public const string REMOVE_LEADERS_CUSTOM = "RemoveLeaders_TODOComm";
         public const string UPDATE_LEADERS_CUSTOM = "UpdateLeaders_TODOComm";
+    }
+
+    public enum Priority {
+        Minor,
+        Warning,
+        Error
+    }
+
+    public class ErrorIdColorConverter : IValueConverter {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture) {
+            { }
+            if (value is Priority prior) {
+                switch (prior) {
+                    case Priority.Minor:
+                        return Brushes.White;
+
+                    case Priority.Warning:
+                        return Brushes.Yellow;
+
+                    case Priority.Error:
+                        return Brushes.Red;
+
+                    default:
+                        // TODO: implement own exeption type
+                        throw new Exception("Priority type was not recognised");
+                }
+            }
+            else {
+                throw new ArgumentException("Value is not Priority type");
+            }
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) {
+            throw new NotImplementedException();
+        }
     }
 }

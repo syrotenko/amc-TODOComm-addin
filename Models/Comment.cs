@@ -12,6 +12,7 @@ namespace TODOComm.Models {
             this.Elements = new ObservableCollection<ElementModel>();
             this.uiDoc = uiDoc;
             this.doc = uiDoc.Document;
+            Prior = default;
         }
 
         
@@ -100,6 +101,18 @@ namespace TODOComm.Models {
             }
         }
 
+        private Priority prior;
+        public Priority Prior {
+            get {
+                return prior;
+            }
+
+            set {
+                prior = value;
+                OnPropertyChanged(PropertyNames.PRIOR);
+            }
+        }
+
 
         public Document doc;
         public UIDocument uiDoc;
@@ -184,6 +197,7 @@ namespace TODOComm.Models {
             public const string COMMENT_POSITION = "CommentPosition";
             public const string IS_VISIBLE = "IsVisible";
             public const string IS_VISIBLE_LEADERS = "IsVisibleLeaders";
+            public const string PRIOR = "Prior";
         }
     }
 }

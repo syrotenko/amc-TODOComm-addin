@@ -1,14 +1,13 @@
-﻿using Autodesk.Revit.DB;
-using Autodesk.Revit.UI.Selection;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.ComponentModel;
 using System.Windows.Input;
 using TODOComm.Models;
 using TODOComm.UI;
 
 namespace TODOComm.ViewModel {
+
     public class CommentEditViewModel : INotifyPropertyChanged {
+
         public CommentEditViewModel(Comment comment) {
             this.Comment = comment;
 
@@ -17,6 +16,7 @@ namespace TODOComm.ViewModel {
             Comment.PropertyChanged += RaisePropertyChanged;
         }
 
+        
         public CommentEditCommand ApplyChangesCommand { get; set; }
         public CommentEditCommand CancelChangesCommand { get; set; }
         public CommentEditCommand CloseWindowCommand { get; set; }
