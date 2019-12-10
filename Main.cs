@@ -30,7 +30,7 @@ namespace TODOComm {
 
         private ExternalAppEvent showElementsHandler;
         private ExternalAppEvent hideElementsHandler;
-        
+
         private ExternalAppEvent createLeadersHandler;
         private ExternalAppEvent removeLeadersHandler;
         private ExternalAppEvent updateLeadersHandler;
@@ -154,7 +154,7 @@ namespace TODOComm {
         private void updateLeaders(Document doc, Dictionary<Leader, XYZ> updateInfo) {
             UpdateLeaderHandler handler = (UpdateLeaderHandler)updateLeadersHandler.handler;
 
-            handler.doc= doc;
+            handler.doc = doc;
             handler.updateInfo = updateInfo;
 
             this.updateLeadersHandler.Raise();
@@ -214,7 +214,7 @@ namespace TODOComm {
         public ICollection<ElementId> elemIds;
 
         public void Execute(UIApplication uiapp) {
-            
+
             if (doc != null && (view != null && elemIds != null)) {
 
                 using (var trn = new Transaction(doc, TransactionNames.HIDE_ELEMENTS_CUSTOM)) {
@@ -241,14 +241,14 @@ namespace TODOComm {
         public string newTextValue;
 
         public void Execute(UIApplication uiapp) {
-            
+
             if (doc != null && (!string.IsNullOrEmpty(newTextValue) && textNoteId != null)) {
-                
+
                 using (Transaction trn = new Transaction(doc)) {
                     trn.Start(TransactionNames.EDIT_TEXT_CUSTOM);
-                    
+
                     ((TextNote)doc.GetElement(this.textNoteId)).Text = newTextValue;
-                    
+
                     trn.Commit();
                 }
 
@@ -266,7 +266,7 @@ namespace TODOComm {
         public Comment comment;
 
         public void Execute(UIApplication uiapp) {
-            
+
             if (comment != null) {
 
                 using (Transaction trn = new Transaction(comment.doc)) {
@@ -323,7 +323,7 @@ namespace TODOComm {
 
         public void Execute(UIApplication uiapp) {
             if (doc != null && textNotes != null) {
-                
+
                 using (Transaction trn = new Transaction(doc)) {
                     trn.Start(TransactionNames.REMOVE_LEADERS_CUSTOM);
 
@@ -352,7 +352,27 @@ namespace TODOComm {
                     trn.Start(TransactionNames.UPDATE_LEADERS_CUSTOM);
 
                     foreach (KeyValuePair<Leader, XYZ> entry in updateInfo) {
-                        entry.Key.End = entry.Value;
+
+                        /*
+                            It's necessary to catch exception because transaction will not be complete if any errors are acquired.
+                            Some errors which Revit throws are not errors in fact.
+                        
+                            Example:
+                            0.Comment try..catch code
+                            1.Create comment_1 with single object
+                            2.Create comment_2 with another single object
+                            3.Select object of comment_1 and object of comment_2 and TextNote of comment_2
+                            4.Move it
+                         
+                            You will see, that object of comment_1 is not moved.
+                            It happens because when system tries to update Leader of comment_2 object the error appears
+                            Revit throws error because when TextNote is moved, Revit creates new Leaders
+                            Because of that error, normal update transactions "undo"
+                        */
+                        try {
+                            entry.Key.End = entry.Value;
+                        }
+                        catch (Autodesk.Revit.Exceptions.InvalidObjectException) { }
                     }
 
                     trn.Commit();
