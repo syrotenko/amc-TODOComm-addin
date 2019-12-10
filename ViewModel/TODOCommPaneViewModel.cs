@@ -34,6 +34,7 @@ namespace TODOComm.ViewModel {
         public BtnCommands EditComm { get; set; }
         public BtnCommands SelectComm { get; set; }
         public BtnCommands SetVisibleComm { get; set; }
+        public BtnCommands SetVisibleLeaders { get; set; }
 
 
         private TODOCommModel TODOCommModel;
@@ -58,6 +59,12 @@ namespace TODOComm.ViewModel {
             SetVisibleComm = new BtnCommands() {
                 act = (comment) => {
                     comment.IsVisible = comment.IsVisible == true ? false : true;
+                }
+            };
+
+            SetVisibleLeaders = new BtnCommands() {
+                act = (comment) => {
+                    comment.IsVisibleLeaders = comment.IsVisibleLeaders == true ? false : true;
                 }
             };
         }

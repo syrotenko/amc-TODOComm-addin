@@ -81,7 +81,7 @@ namespace TODOComm.Models {
                     updateInfo[item.Leader] = item.Position;
                 }
 
-                Main.ExternalApp.Transactions.UpdateLeader(doc, updateInfo);
+                Main.ExternalApp.Transactions.UpdateLeaders(doc, updateInfo);
             }
 
 
@@ -98,7 +98,7 @@ namespace TODOComm.Models {
                 foreach (var comment in updatedComments) {
                     var textNote = (TextNote)doc.GetElement(comment.TextNoteId);
                     Main.ExternalApp.Transactions.RemoveLeaders(doc, textNote);
-                    Main.ExternalApp.Transactions.CreateLeader(doc, textNote, comment.Elements);
+                    Main.ExternalApp.Transactions.CreateLeaders(doc, textNote, comment.Elements);
                 }
             }
         }

@@ -37,7 +37,8 @@ namespace TODOComm.Models {
                 this.textNoteId = value;
                 
                 // It's necessary to create leaders here because TextNote is required
-                Main.ExternalApp.Transactions.CreateLeader(doc, (TextNote)doc.GetElement(TextNoteId), Elements);
+                if (IsVisibleLeaders)
+                    Main.ExternalApp.Transactions.CreateLeaders(doc, (TextNote)doc.GetElement(TextNoteId), Elements);
 
                 OnPropertyChanged(PropertyNames.TEXTNOTE_ID);
             }
@@ -82,6 +83,23 @@ namespace TODOComm.Models {
             }
         }
 
+        private bool isVisibleLeaders = true;
+        public bool IsVisibleLeaders {
+            get {
+                return isVisibleLeaders;
+            }
+            set {
+                isVisibleLeaders = value;
+
+                if (value)
+                    showLeaders();
+                else
+                    hideLeaders();
+
+                OnPropertyChanged(PropertyNames.IS_VISIBLE_LEADERS);
+            }
+        }
+
 
         public Document doc;
         public UIDocument uiDoc;
@@ -89,6 +107,9 @@ namespace TODOComm.Models {
 
         public void addElement(ElementModel element) {
             Elements.Add(element);
+            if (TextNoteId != null && IsVisibleLeaders) {
+                Main.ExternalApp.Transactions.CreateLeaders(doc, (TextNote)doc.GetElement(TextNoteId), new List<ElementModel>() { element });
+            }
         }
 
         public void removeElement(ElementModel element) {
@@ -142,6 +163,14 @@ namespace TODOComm.Models {
             Main.ExternalApp.Transactions.HideElements(doc, uiDoc.ActiveView, new List<ElementId>() { TextNoteId });
         }
 
+        private void showLeaders() {
+            Main.ExternalApp.Transactions.CreateLeaders(doc, (TextNote)doc.GetElement(TextNoteId), Elements);
+        }
+
+        private void hideLeaders() {
+            Main.ExternalApp.Transactions.RemoveLeaders(doc, (TextNote)doc.GetElement(TextNoteId));
+        }
+
 
         public event PropertyChangedEventHandler PropertyChanged;
         public void OnPropertyChanged(string propertyName) {
@@ -154,6 +183,7 @@ namespace TODOComm.Models {
             public const string ELEMENTS = "Elements";
             public const string COMMENT_POSITION = "CommentPosition";
             public const string IS_VISIBLE = "IsVisible";
+            public const string IS_VISIBLE_LEADERS = "IsVisibleLeaders";
         }
     }
 }

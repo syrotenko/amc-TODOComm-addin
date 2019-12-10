@@ -31,9 +31,9 @@ namespace TODOComm {
         private ExternalAppEvent showElementsHandler;
         private ExternalAppEvent hideElementsHandler;
         
-        private ExternalAppEvent createLeaderHandler;
+        private ExternalAppEvent createLeadersHandler;
         private ExternalAppEvent removeLeadersHandler;
-        private ExternalAppEvent updateLeaderHandler;
+        private ExternalAppEvent updateLeadersHandler;
 
 
         public Result OnStartup(UIControlledApplication application) {
@@ -61,9 +61,9 @@ namespace TODOComm {
             public Action<Document, ElementId, string> ChangeTextNoteText = Main.ExternalApp.changeTextNoteText;
             public Action<Document, View, ICollection<ElementId>> ShowElements = Main.ExternalApp.showElements;
             public Action<Document, View, ICollection<ElementId>> HideElements = Main.ExternalApp.hideElements;
-            public Action<Document, TextNote, IEnumerable<ElementModel>> CreateLeader = Main.ExternalApp.createLeader;
+            public Action<Document, TextNote, IEnumerable<ElementModel>> CreateLeaders = Main.ExternalApp.createLeaders;
             public Action<Document, TextNote> RemoveLeaders = Main.ExternalApp.removeLeaders;
-            public Action<Document, Dictionary<Leader, XYZ>> UpdateLeader = Main.ExternalApp.updateLeader;
+            public Action<Document, Dictionary<Leader, XYZ>> UpdateLeaders = Main.ExternalApp.updateLeaders;
         }
 
 
@@ -96,9 +96,9 @@ namespace TODOComm {
             this.changeTextNoteTextHandler = new ExternalAppEvent(new ChangeTextNoteTextHandler());
             this.showElementsHandler = new ExternalAppEvent(new ShowElementsHandler());
             this.hideElementsHandler = new ExternalAppEvent(new HideElementsHandler());
-            this.createLeaderHandler = new ExternalAppEvent(new CreateLeadersHandler());
+            this.createLeadersHandler = new ExternalAppEvent(new CreateLeadersHandler());
             this.removeLeadersHandler = new ExternalAppEvent(new RemoveLeadersHandler());
-            this.updateLeaderHandler = new ExternalAppEvent(new UpdateLeaderHandler());
+            this.updateLeadersHandler = new ExternalAppEvent(new UpdateLeaderHandler());
         }
 
         private void createTextNote(Comment comment) {
@@ -135,14 +135,14 @@ namespace TODOComm {
 
             this.hideElementsHandler.Raise();
         }
-        private void createLeader(Document doc, TextNote textNote, IEnumerable<ElementModel> elements) {
-            CreateLeadersHandler handler = (CreateLeadersHandler)createLeaderHandler.handler;
+        private void createLeaders(Document doc, TextNote textNote, IEnumerable<ElementModel> elements) {
+            CreateLeadersHandler handler = (CreateLeadersHandler)createLeadersHandler.handler;
 
             handler.doc = doc;
             handler.textNote = textNote;
             handler.elems = elements;
 
-            this.createLeaderHandler.Raise();
+            this.createLeadersHandler.Raise();
         }
         private void removeLeaders(Document doc, TextNote textNote) {
             RemoveLeadersHandler handler = (RemoveLeadersHandler)removeLeadersHandler.handler;
@@ -152,13 +152,13 @@ namespace TODOComm {
 
             this.removeLeadersHandler.Raise();
         }
-        private void updateLeader(Document doc, Dictionary<Leader, XYZ> updateInfo) {
-            UpdateLeaderHandler handler = (UpdateLeaderHandler)updateLeaderHandler.handler;
+        private void updateLeaders(Document doc, Dictionary<Leader, XYZ> updateInfo) {
+            UpdateLeaderHandler handler = (UpdateLeaderHandler)updateLeadersHandler.handler;
 
             handler.doc= doc;
             handler.updateInfo = updateInfo;
 
-            this.updateLeaderHandler.Raise();
+            this.updateLeadersHandler.Raise();
         }
 
 
