@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Windows.Input;
 using TODOComm.Models;
 using TODOComm.UI;
 
@@ -31,40 +30,60 @@ namespace TODOComm.ViewModel {
         }
 
 
-        public BtnCommands EditComm { get; set; }
-        public BtnCommands SelectComm { get; set; }
-        public BtnCommands SetVisibleComm { get; set; }
-        public BtnCommands SetVisibleLeaders { get; set; }
+        public DelegateCommand EditComm { get; set; }
+        public DelegateCommand SelectComm { get; set; }
+        public DelegateCommand SetVisibleComm { get; set; }
+        public DelegateCommand SetVisibleLeaders { get; set; }
 
 
         private TODOCommModel TODOCommModel;
 
 
         private void setupCommands() {
-            EditComm = new BtnCommands() {
-                act = (comment) => {
-                    CommentEdit win = new CommentEdit(comment);
-                    win.WindowStartupLocation = System.Windows.WindowStartupLocation.CenterScreen;
-                    win.ShowDialog();
+            EditComm = new DelegateCommand() {
+                act = (obj) => {
+                    if (obj is Comment comment) {
+                        CommentEdit win = new CommentEdit(comment);
+                        win.WindowStartupLocation = System.Windows.WindowStartupLocation.CenterScreen;
+                        win.ShowDialog();
+                    }
+                    else {
+                        throw new NotSupportedException("Argument is not Comment type");
+                    }
                 }
             };
 
-            SelectComm = new BtnCommands() {
-                act = (comment) => {
-                    SelectedComment = comment;
-                    comment.highlightComment();
+            SelectComm = new DelegateCommand() {
+                act = (obj) => {
+                    if (obj is Comment comment) {
+                        SelectedComment = comment;
+                        comment.highlightComment();
+                    }
+                    else {
+                        throw new NotSupportedException("Argument is not Comment type");
+                    }
                 }
             };
 
-            SetVisibleComm = new BtnCommands() {
-                act = (comment) => {
-                    comment.IsVisible = comment.IsVisible == true ? false : true;
+            SetVisibleComm = new DelegateCommand() {
+                act = (obj) => {
+                    if (obj is Comment comment) {
+                        comment.IsVisible = comment.IsVisible == true ? false : true;
+                    }
+                    else {
+                        throw new NotSupportedException("Argument is not Comment type");
+                    }
                 }
             };
 
-            SetVisibleLeaders = new BtnCommands() {
-                act = (comment) => {
-                    comment.IsVisibleLeaders = comment.IsVisibleLeaders == true ? false : true;
+            SetVisibleLeaders = new DelegateCommand() {
+                act = (obj) => {
+                    if (obj is Comment comment) {
+                        comment.IsVisibleLeaders = comment.IsVisibleLeaders == true ? false : true;
+                    }
+                    else {
+                        throw new NotSupportedException("Argument is not Comment type");
+                    }
                 }
             };
         }
@@ -78,20 +97,6 @@ namespace TODOComm.ViewModel {
 
         public static class PropertyNames {
             public const string SELECTED_COMMNET = "SelectedComment";
-        }
-    }
-
-    public class BtnCommands : ICommand {
-        public Action<Comment> act;
-
-        public event EventHandler CanExecuteChanged;
-
-        public bool CanExecute(object parameter) {
-            return true;
-        }
-
-        public void Execute(object parameter) {
-            act?.Invoke((Comment)parameter);
         }
     }
 }

@@ -1,6 +1,4 @@
-﻿using System;
-using System.ComponentModel;
-using System.Windows.Input;
+﻿using System.ComponentModel;
 using TODOComm.Models;
 using TODOComm.UI;
 
@@ -17,11 +15,11 @@ namespace TODOComm.ViewModel {
         }
 
         
-        public CommentEditCommand ApplyChangesCommand { get; set; }
-        public CommentEditCommand CancelChangesCommand { get; set; }
-        public CommentEditCommand CloseWindowCommand { get; set; }
-        public CommentEditCommand AddElementCommand { get; set; }
-        public CommentEditCommand RemoveElementCommand { get; set; }
+        public DelegateCommand ApplyChangesCommand { get; set; }
+        public DelegateCommand CancelChangesCommand { get; set; }
+        public DelegateCommand CloseWindowCommand { get; set; }
+        public DelegateCommand AddElementCommand { get; set; }
+        public DelegateCommand RemoveElementCommand { get; set; }
 
         public Comment Comment { get; set; }
         public bool isApply { get; private set; }
@@ -49,25 +47,25 @@ namespace TODOComm.ViewModel {
 
 
         private void setupCommands() {
-            this.ApplyChangesCommand = new CommentEditCommand() {
-                act = () => {
+            this.ApplyChangesCommand = new DelegateCommand() {
+                act = (dummy) => {
                     this.isApply = true;
                     this.Comment.applyChanges();
                     this.CloseWindowCommand.Execute();
                 },
-                func = () => !string.IsNullOrEmpty(this.Comment.CommentText)
+                canExec = () => !string.IsNullOrEmpty(this.Comment.CommentText)
             };
 
-            this.CancelChangesCommand = new CommentEditCommand() {
-                act = () => {
+            this.CancelChangesCommand = new DelegateCommand() {
+                act = (dummy) => {
                     isApply = false;
                     Comment.cancelChanges();
                     CloseWindowCommand.Execute();
                 }
             };
 
-            this.AddElementCommand = new CommentEditCommand() {
-                act = () => {
+            this.AddElementCommand = new DelegateCommand() {
+                act = (dummy) => {
                     CloseWindowCommand.Execute();
                     try {
                         Comment.pickMultiElements();
@@ -80,42 +78,17 @@ namespace TODOComm.ViewModel {
                 },
             };
 
-            this.RemoveElementCommand = new CommentEditCommand() {
-                act = () => {
+            this.RemoveElementCommand = new DelegateCommand() {
+                act = (dummy) => {
                     Comment.removeElement(SelectedElement);
                 },
-                func = () => SelectedElement != null
+                canExec = () => SelectedElement != null
             };
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
         public void OnPropertyChanged(string propertyName) {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
-    }
-
-    public class CommentEditCommand : ICommand {
-        public Action act;
-        public Func<bool> func;
-
-        public event EventHandler CanExecuteChanged;
-
-        public void RaiseCanExecuteChanged() {
-            CanExecuteChanged?.Invoke(this, new EventArgs());
-        }
-
-        public bool CanExecute(object parameter) {
-            if (func != null)
-                return func();
-            return true;
-        }
-
-        public void Execute(object parameter) {
-            act?.Invoke();
-        }
-
-        public void Execute() {
-            act?.Invoke();
         }
     }
 }

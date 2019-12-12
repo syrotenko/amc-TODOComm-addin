@@ -65,6 +65,7 @@
     <Compile Include="Commands\MakeNoteMultiObjCommand.cs" />
     <Compile Include="Commands\MakeNoteWithoutObjCommand.cs" />
     <Compile Include="Commands\ShowPanelCommand.cs" />
+    <Compile Include="DelegateCommand.cs" />
     <Compile Include="Models\Comment.cs" />
     <Compile Include="HelpLib.cs" />
     <Compile Include="Main.cs" />

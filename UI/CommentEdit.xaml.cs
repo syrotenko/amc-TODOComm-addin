@@ -8,7 +8,7 @@ namespace TODOComm.UI {
             InitializeComponent();
 
             CommentEditViewModel viewModel = new CommentEditViewModel(comment);
-            viewModel.CloseWindowCommand = new CommentEditCommand() { act = () => this.Close() };
+            viewModel.CloseWindowCommand = new DelegateCommand() { act = (dummy) => this.Close() };
 
             DataContext = viewModel;
         }
