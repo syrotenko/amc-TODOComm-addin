@@ -40,8 +40,10 @@ namespace TODOComm.ViewModel {
 
 
         private void RaisePropertyChanged(object sender, PropertyChangedEventArgs e) {
-            if (string.Compare(e.PropertyName, Comment.PropertyNames.COMMENT_TEXT) == 0) {
-                ApplyChangesCommand.RaiseCanExecuteChanged();
+            switch (e.PropertyName) {
+                case Comment.PropertyNames.COMMENT_TEXT:
+                    ApplyChangesCommand.RaiseCanExecuteChanged();
+                    break;
             }
         }
 

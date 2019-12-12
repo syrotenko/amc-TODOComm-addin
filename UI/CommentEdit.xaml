@@ -11,7 +11,7 @@
 
     <Grid>
         <Grid.Resources>
-            <helpLib:ErrorIdColorConverter x:Key="myDateConverter" />
+            <helpLib:PriorityColorConverter x:Key="priorityColorConverter" />
             
             <ObjectDataProvider x:Key="dataFromEnum" MethodName="GetValues"
                                 ObjectType="{x:Type System:Enum}">
@@ -29,7 +29,7 @@
 
             <DataTemplate x:Key="priorityTemplate">
                 <TextBlock x:Name="priorVal" Text="{Binding}" Margin="-1"
-                               Background="{Binding ElementName=priorVal, Path=DataContext, Converter={StaticResource myDateConverter}}"
+                               Background="{Binding ElementName=priorVal, Path=DataContext, Converter={StaticResource priorityColorConverter}}"
                                Width="300"/>
             </DataTemplate>
         </Grid.Resources>
@@ -97,7 +97,8 @@
                        Text="Connected objects" FontWeight="Bold"/>
 
             <ListBox Grid.Row="1" Margin="10, 0, 10, 10"
-                     ItemsSource="{Binding Comment.Elements, Mode=OneWay}" SelectedItem="{Binding SelectedElement, Mode=OneWayToSource}"
+                     ItemsSource="{Binding Comment.Elements, Mode=OneWay}" 
+                     SelectedItem="{Binding SelectedElement, Mode=OneWayToSource}"
                      ItemTemplate="{StaticResource connObjsListTemplate}"/>
 
             <Grid Grid.Column="0" Grid.Row="2">

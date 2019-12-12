@@ -100,6 +100,9 @@
     <Content Include="resources\multiObj_32x32.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="resources\selectedObj_32x32.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="resources\showPanel_16x16.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

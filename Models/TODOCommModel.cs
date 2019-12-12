@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
-using System.Windows.Threading;
 
 namespace TODOComm.Models {
     class TODOCommModel : INotifyPropertyChanged {
@@ -82,7 +81,7 @@ namespace TODOComm.Models {
                     updateInfo[item.Leader] = item.Position;
                 }
 
-                Main.ExternalApp.Transactions.UpdateLeader(doc, updateInfo);
+                Main.getInstance().Transactions.UpdateLeader(doc, updateInfo);
             }
 
 
@@ -94,7 +93,7 @@ namespace TODOComm.Models {
 
                 // It's necessary to recreate leaders because Revit creates new leaders each time when TextNote is moved
                 // Error is occured when trying to update existed leaders
-                Main.ExternalApp.Transactions.RemoveLeaders(doc, updatedComments.Select(comment => (TextNote)doc.GetElement(comment.TextNoteId)));
+                Main.getInstance().Transactions.RemoveLeaders(doc, updatedComments.Select(comment => (TextNote)doc.GetElement(comment.TextNoteId)));
                 
                 Dictionary<TextNote, IEnumerable<ElementModel>> updateInfo = new Dictionary<TextNote, IEnumerable<ElementModel>>();
 
@@ -102,7 +101,7 @@ namespace TODOComm.Models {
                     updateInfo[(TextNote)doc.GetElement(comment.TextNoteId)] = comment.Elements;
                 }
 
-                Main.ExternalApp.Transactions.CreateLeaders(doc, updateInfo);
+                Main.getInstance().Transactions.CreateLeaders(doc, updateInfo);
             }
         }
 
@@ -120,6 +119,8 @@ namespace TODOComm.Models {
         }
 
         // TODO: write doc
+        // BUG: change way to store the result of func
+        // because exeption is thrown when several leaders point the same object
         private Dictionary<ElementId, Element> getElementsById(Document doc, IEnumerable<ElementId> ids) {
             return ids.Select(elemId => doc.GetElement(elemId)).ToDictionary(elem => elem.Id);
         }
@@ -129,7 +130,7 @@ namespace TODOComm.Models {
             if (sender is Comment comment) {
                 if (!isCommentExists(comment)) {
                     addComment(comment);
-                    Main.ExternalApp.Transactions.CreateTextNote(comment);
+                    Main.getInstance().Transactions.CreateTextNote(comment);
                 }
             }
             else {

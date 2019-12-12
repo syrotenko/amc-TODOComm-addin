@@ -10,8 +10,9 @@ namespace TODOComm.Models {
     public class Comment : INotifyPropertyChanged {
         public Comment(UIDocument uiDoc) {
             this.Elements = new ObservableCollection<ElementModel>();
-            this.uiDoc = uiDoc;
             this.doc = uiDoc.Document;
+            this.view = uiDoc.ActiveView;
+            this.selection = uiDoc.Selection;
             Prior = default;
         }
 
@@ -43,7 +44,7 @@ namespace TODOComm.Models {
                         { (TextNote)doc.GetElement(TextNoteId), Elements }
                     };
 
-                    Main.ExternalApp.Transactions.CreateLeaders(doc, updateInfo);
+                    Main.getInstance().Transactions.CreateLeaders(doc, updateInfo);
                 }
 
                 OnPropertyChanged(PropertyNames.TEXTNOTE_ID);
@@ -120,7 +121,9 @@ namespace TODOComm.Models {
 
 
         public Document doc;
-        public UIDocument uiDoc;
+        //public UIDocument uiDoc;
+        public View view;
+        public Selection selection;
 
 
         public void addElement(ElementModel element) {
@@ -130,7 +133,7 @@ namespace TODOComm.Models {
                         { (TextNote)doc.GetElement(TextNoteId), new List<ElementModel>() { element } }
                     };
 
-                Main.ExternalApp.Transactions.CreateLeaders(doc, updateInfo);
+                Main.getInstance().Transactions.CreateLeaders(doc, updateInfo);
             }
         }
 
@@ -142,7 +145,7 @@ namespace TODOComm.Models {
             TODOCommModel.getInstance().RaiseCommentEditApply(this);
             prevCommentText = CommentText;
             if (TextNoteId != null && doc != null) {
-                Main.ExternalApp.Transactions.ChangeTextNoteText(doc, TextNoteId, CommentText);
+                Main.getInstance().Transactions.ChangeTextNoteText(doc, TextNoteId, CommentText);
             }
         }
 
@@ -157,11 +160,10 @@ namespace TODOComm.Models {
             List<ElementId> elemIdsToHighlight = Elements.Select(x => x.Id).ToList();
             elemIdsToHighlight.Add(TextNoteId);
 
-            uiDoc.Selection.SetElementIds(elemIdsToHighlight);
+            selection.SetElementIds(elemIdsToHighlight);
         }
 
         public void pickElement() {
-            Selection selection = uiDoc.Selection;
             Reference objRef = selection.PickObject(ObjectType.Element, Prompts.SELECT_OBJ);
             Element elem = doc.GetElement(objRef);
 
@@ -169,7 +171,6 @@ namespace TODOComm.Models {
         }
 
         public void pickMultiElements () {
-            Selection selection = uiDoc.Selection;
             IList<Reference> objRefs = selection.PickObjects(ObjectType.Element, Prompts.SELECT_OBJS);
             foreach (Reference objRef in objRefs) {
                 Element elem = doc.GetElement(objRef);
@@ -178,11 +179,11 @@ namespace TODOComm.Models {
         }
 
         private void showElements() {
-            Main.ExternalApp.Transactions.ShowElements(doc, uiDoc.ActiveView, new List<ElementId>() { TextNoteId });
+            Main.getInstance().Transactions.ShowElements(doc, view, new List<ElementId>() { TextNoteId });
         }
 
         private void hideElements() {
-            Main.ExternalApp.Transactions.HideElements(doc, uiDoc.ActiveView, new List<ElementId>() { TextNoteId });
+            Main.getInstance().Transactions.HideElements(doc, view, new List<ElementId>() { TextNoteId });
         }
 
         private void showLeaders() {
@@ -190,11 +191,11 @@ namespace TODOComm.Models {
                         { (TextNote)doc.GetElement(TextNoteId), Elements }
                     };
 
-            Main.ExternalApp.Transactions.CreateLeaders(doc, updateInfo);
+            Main.getInstance().Transactions.CreateLeaders(doc, updateInfo);
         }
 
         private void hideLeaders() {
-            Main.ExternalApp.Transactions.RemoveLeaders(doc, new List<TextNote>() { (TextNote)doc.GetElement(TextNoteId) });
+            Main.getInstance().Transactions.RemoveLeaders(doc, new List<TextNote>() { (TextNote)doc.GetElement(TextNoteId) });
         }
 
 

@@ -11,12 +11,19 @@ namespace TODOComm {
     class Main : IExternalApplication {
         public Main() {
             todoModel = TODOCommModel.getInstance();
-            ExternalApp = this;
+            instance = this;
             Transactions = new TransactionsAvailable();
         }
 
+        private static Main instance;
 
-        public static Main ExternalApp;
+        public static Main getInstance() {
+            if (instance == null)
+                instance = new Main();
+            return instance;
+        }
+
+
         public TransactionsAvailable Transactions;
 
         private const string ADDIN_NAME = "TODOComm add-in";
@@ -45,7 +52,7 @@ namespace TODOComm {
 
             // Remark: it's necessary to create and register events in OnStartup method
             // because UIControlledApplication instance is garantee created after OnStartup call
-            registerEventsAndHandlers();
+            registerEventHandlers();
             createExternalEvents();
 
             return Result.Succeeded;
@@ -57,19 +64,19 @@ namespace TODOComm {
 
 
         public class TransactionsAvailable {
-            public Action<Comment> CreateTextNote = Main.ExternalApp.createTextNote;
-            public Action<Document, ElementId, string> ChangeTextNoteText = Main.ExternalApp.changeTextNoteText;
-            public Action<Document, View, ICollection<ElementId>> ShowElements = Main.ExternalApp.showElements;
-            public Action<Document, View, ICollection<ElementId>> HideElements = Main.ExternalApp.hideElements;
-            public Action<Document, Dictionary<TextNote, IEnumerable<ElementModel>>> CreateLeaders = Main.ExternalApp.createLeaders;
-            public Action<Document, IEnumerable<TextNote>> RemoveLeaders = Main.ExternalApp.removeLeaders;
-            public Action<Document, Dictionary<Leader, XYZ>> UpdateLeader = Main.ExternalApp.updateLeaders;
+            public Action<Comment> CreateTextNote = Main.getInstance().createTextNote;
+            public Action<Document, ElementId, string> ChangeTextNoteText = Main.getInstance().changeTextNoteText;
+            public Action<Document, View, ICollection<ElementId>> ShowElements = Main.getInstance().showElements;
+            public Action<Document, View, ICollection<ElementId>> HideElements = Main.getInstance().hideElements;
+            public Action<Document, Dictionary<TextNote, IEnumerable<ElementModel>>> CreateLeaders = Main.getInstance().createLeaders;
+            public Action<Document, IEnumerable<TextNote>> RemoveLeaders = Main.getInstance().removeLeaders;
+            public Action<Document, Dictionary<Leader, XYZ>> UpdateLeader = Main.getInstance().updateLeaders;
         }
 
 
         private void buildUI(UIControlledApplication application) {
             application.CreateRibbonTab(ADDIN_NAME);
-            var panel = application.CreateRibbonPanel(ADDIN_NAME, CONTROL_PANEL_NAME);
+            RibbonPanel panel = application.CreateRibbonPanel(ADDIN_NAME, CONTROL_PANEL_NAME);
 
             panel.AddItem(RevitUI.createShowPanelButton());
             panel.AddItem(RevitUI.createHidePanelButton());
@@ -86,8 +93,12 @@ namespace TODOComm {
             application.RegisterDockablePane(new DockablePaneId(guid), Properties.Resource.PANE_TITLE, new UI.TODOCommPane());
         }
 
-        private void registerEventsAndHandlers() {
+        private void registerEventHandlers() {
             registerDocumentChanged(new EventHandler<DocumentChangedEventArgs>(todoModel.wasChangeHandler));
+        }
+
+        private void registerDocumentChanged(EventHandler<DocumentChangedEventArgs> eventHandler) {
+            application.ControlledApplication.DocumentChanged += eventHandler;
         }
 
 
@@ -125,7 +136,7 @@ namespace TODOComm {
 
             this.showElementsHandler.Raise();
         }
-
+        
         private void hideElements(Document doc, View view, ICollection<ElementId> elementIds) {
             HideElementsHandler handler = (HideElementsHandler)hideElementsHandler.handler;
 
@@ -135,6 +146,7 @@ namespace TODOComm {
 
             this.hideElementsHandler.Raise();
         }
+        
         private void createLeaders(Document doc, Dictionary<TextNote, IEnumerable<ElementModel>> updateInfo) {
             CreateLeadersHandler handler = (CreateLeadersHandler)createLeadersHandler.handler;
 
@@ -143,6 +155,7 @@ namespace TODOComm {
 
             this.createLeadersHandler.Raise();
         }
+        
         private void removeLeaders(Document doc, IEnumerable<TextNote> textNotes) {
             RemoveLeadersHandler handler = (RemoveLeadersHandler)removeLeadersHandler.handler;
 
@@ -151,6 +164,7 @@ namespace TODOComm {
 
             this.removeLeadersHandler.Raise();
         }
+        
         private void updateLeaders(Document doc, Dictionary<Leader, XYZ> updateInfo) {
             UpdateLeaderHandler handler = (UpdateLeaderHandler)updateLeadersHandler.handler;
 
@@ -158,11 +172,6 @@ namespace TODOComm {
             handler.updateInfo = updateInfo;
 
             this.updateLeadersHandler.Raise();
-        }
-
-
-        private void registerDocumentChanged(EventHandler<DocumentChangedEventArgs> eventHandler) {
-            application.ControlledApplication.DocumentChanged += eventHandler;
         }
     }
 
@@ -272,7 +281,7 @@ namespace TODOComm {
                 using (Transaction trn = new Transaction(comment.doc)) {
                     trn.Start(TransactionNames.CREATE_TEXTNOTE_CUSTOM);
 
-                    TextNote note = TextNote.Create(comment.doc, comment.uiDoc.ActiveView.Id, comment.CommentPosition, comment.CommentText,
+                    TextNote note = TextNote.Create(comment.doc, comment.view.Id, comment.CommentPosition, comment.CommentText,
                                                     comment.doc.GetDefaultElementTypeId(ElementTypeGroup.TextNoteType));
 
                     comment.TextNoteId = note.Id;

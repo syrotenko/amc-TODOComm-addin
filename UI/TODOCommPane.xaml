@@ -9,11 +9,11 @@
     
     <Grid Background="WhiteSmoke">
         <Grid.Resources>
-            <helpLib:ErrorIdColorConverter x:Key="myDateConverter" />
+            <helpLib:PriorityColorConverter x:Key="priorityColorConverter" />
             
             <DataTemplate x:Key="commentsListDataTemplate">
                 <Grid x:Name="commentRepresenter" Width="300"
-                      Background="{Binding ElementName=commentRepresenter, Path=DataContext.Prior, Converter={StaticResource myDateConverter}}">
+                      Background="{Binding ElementName=commentRepresenter, Path=DataContext.Prior, Converter={StaticResource priorityColorConverter}}">
                     
                     <Grid.Resources>
                         <Style TargetType="Border" >

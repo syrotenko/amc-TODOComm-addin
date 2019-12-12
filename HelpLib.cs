@@ -2,7 +2,6 @@
 using System;
 using System.Globalization;
 using System.IO;
-using System.Runtime.InteropServices;
 using System.Windows.Data;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
@@ -17,6 +16,12 @@ namespace TODOComm {
             return Directory.GetCurrentDirectory() + path;
         }
 
+        /// <summary>
+        /// Convert Location of Element to XYZ value
+        /// </summary>
+        /// <param name="elem"></param>
+        /// <returns></returns>
+        // TODO: use Locaton as parameter instead of Element
         public static XYZ GetElementPosition(Element elem) {
             Location loc = elem.Location;
 
@@ -57,9 +62,11 @@ namespace TODOComm {
         Error
     }
 
-    public class ErrorIdColorConverter : IValueConverter {
+    /// <summary>
+    /// Convert Priority to color brush
+    /// </summary>
+    public class PriorityColorConverter : IValueConverter {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture) {
-            { }
             if (value is Priority prior) {
                 switch (prior) {
                     case Priority.Minor:

@@ -4,9 +4,6 @@ using System.Windows.Input;
 using TODOComm.ViewModel;
 
 namespace TODOComm.UI {
-    /// <summary>
-    /// Interaction logic for TODOCommMainPage.xaml
-    /// </summary>
     public partial class TODOCommPane : Page, IDockablePaneProvider {
         public TODOCommPane() {
             InitializeComponent();
