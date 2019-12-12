@@ -6,7 +6,7 @@
         mc:Ignorable="d" 
         Height="250" Width="500"
         xmlns:System="clr-namespace:System;assembly=mscorlib"
-        xmlns:helpLib="clr-namespace:TODOComm"
+        xmlns:helpLib="clr-namespace:TODOComm.Helper"
         Title="Edit comment">
 
     <Grid>

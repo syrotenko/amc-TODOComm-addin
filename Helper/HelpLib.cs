@@ -6,8 +6,8 @@ using System.Windows.Data;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
-namespace TODOComm {
-    public static class Helper {
+namespace TODOComm.Helper {
+    public static class HelperClass {
         public static BitmapImage getBitmapImage(string path) {
             return new BitmapImage(new Uri(getFullPath(path)));
         }

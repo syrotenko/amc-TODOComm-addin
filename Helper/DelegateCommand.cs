@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Windows.Input;
 
-namespace TODOComm {
+namespace TODOComm.Helper {
     public class DelegateCommand : ICommand {
         public Action<object> act;
         public Func<bool> canExec;

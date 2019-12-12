@@ -1,6 +1,7 @@
 ﻿using Autodesk.Revit.UI;
 using System.Reflection;
 using TODOComm.Commands;
+using TODOComm.Helper;
 
 namespace TODOComm.UI {
     public static class RevitUI {
@@ -9,8 +10,8 @@ namespace TODOComm.UI {
                                                                Assembly.GetExecutingAssembly().Location,
                                                                ShowPanelCommand.getLocation());
 
-            pushButtonData.Image = Helper.getBitmapImage(@"\resources\showPanel_16x16.png");
-            pushButtonData.LargeImage = Helper.getBitmapImage(@"\resources\showPanel_32x32.png");
+            pushButtonData.Image = HelperClass.getBitmapImage(@"\resources\showPanel_16x16.png");
+            pushButtonData.LargeImage = HelperClass.getBitmapImage(@"\resources\showPanel_32x32.png");
 
             return pushButtonData;
         }
@@ -21,8 +22,8 @@ namespace TODOComm.UI {
                                                                HidePanelCommand.getLocation());
 
             // TODO: change img
-            pushButtonData.Image = Helper.getBitmapImage(@"\resources\showPanel_16x16.png");
-            pushButtonData.LargeImage = Helper.getBitmapImage(@"\resources\hidePanel_32x32.png");
+            pushButtonData.Image = HelperClass.getBitmapImage(@"\resources\showPanel_16x16.png");
+            pushButtonData.LargeImage = HelperClass.getBitmapImage(@"\resources\hidePanel_32x32.png");
 
             return pushButtonData;
         }
@@ -33,8 +34,8 @@ namespace TODOComm.UI {
                                                                MakeNoteWithoutObjCommand.getLocation());
 
             // TODO: change img
-            pushButtonData.Image = Helper.getBitmapImage(@"\resources\showPanel_16x16.png");
-            pushButtonData.LargeImage = Helper.getBitmapImage(@"\resources\withoutObj_32x32.png");
+            pushButtonData.Image = HelperClass.getBitmapImage(@"\resources\showPanel_16x16.png");
+            pushButtonData.LargeImage = HelperClass.getBitmapImage(@"\resources\withoutObj_32x32.png");
 
             return pushButtonData;
         }
@@ -45,8 +46,8 @@ namespace TODOComm.UI {
                                                                MakeNoteSingleObjCommand.getLocation());
 
             // TODO: change img
-            pushButtonData.Image = Helper.getBitmapImage(@"\resources\showPanel_16x16.png");
-            pushButtonData.LargeImage = Helper.getBitmapImage(@"\resources\singleObj_32x32.png");
+            pushButtonData.Image = HelperClass.getBitmapImage(@"\resources\showPanel_16x16.png");
+            pushButtonData.LargeImage = HelperClass.getBitmapImage(@"\resources\singleObj_32x32.png");
 
             return pushButtonData;
         }
@@ -57,8 +58,8 @@ namespace TODOComm.UI {
                                                                MakeNoteMultiObjCommand.getLocation());
 
             // TODO: change img
-            pushButtonData.Image = Helper.getBitmapImage(@"\resources\showPanel_16x16.png");
-            pushButtonData.LargeImage = Helper.getBitmapImage(@"\resources\multiObj_32x32.png");
+            pushButtonData.Image = HelperClass.getBitmapImage(@"\resources\showPanel_16x16.png");
+            pushButtonData.LargeImage = HelperClass.getBitmapImage(@"\resources\multiObj_32x32.png");
 
             return pushButtonData;
         }
@@ -69,8 +70,8 @@ namespace TODOComm.UI {
                                                                MakeNoteSelectedObjCommand.getLocation());
 
             // TODO: change img
-            pushButtonData.Image = Helper.getBitmapImage(@"\resources\showPanel_16x16.png");
-            pushButtonData.LargeImage = Helper.getBitmapImage(@"\resources\selectedObj_32x32.png");
+            pushButtonData.Image = HelperClass.getBitmapImage(@"\resources\showPanel_16x16.png");
+            pushButtonData.LargeImage = HelperClass.getBitmapImage(@"\resources\selectedObj_32x32.png");
 
             return pushButtonData;
         }

@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
+using TODOComm.Helper;
 
 namespace TODOComm.Models {
     public class Comment : INotifyPropertyChanged {
@@ -174,7 +175,7 @@ namespace TODOComm.Models {
         public void pickElement() {
             Reference objRef = selection.PickObject(ObjectType.Element, Prompts.SELECT_OBJ);
             Element element = doc.GetElement(objRef);
-            ElementModel elementModel = new ElementModel(element.Id, element.Name, Helper.GetElementPosition(element));
+            ElementModel elementModel = new ElementModel(element.Id, element.Name, HelperClass.GetElementPosition(element));
 
             addElements(new List<ElementModel>() { elementModel });
         }
@@ -183,7 +184,7 @@ namespace TODOComm.Models {
             IList<Reference> objRefs = selection.PickObjects(ObjectType.Element, Prompts.SELECT_OBJS);
             
             IEnumerable<Element> elements = objRefs.Select(objRef => doc.GetElement(objRef));
-            IEnumerable<ElementModel> elementModels = elements.Select(element => new ElementModel(element.Id, element.Name, Helper.GetElementPosition(element)));
+            IEnumerable<ElementModel> elementModels = elements.Select(element => new ElementModel(element.Id, element.Name, HelperClass.GetElementPosition(element)));
 
             addElements(elementModels);
         }

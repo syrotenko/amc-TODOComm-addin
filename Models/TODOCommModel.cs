@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
+using TODOComm.Helper;
 
 namespace TODOComm.Models {
     class TODOCommModel : INotifyPropertyChanged {
@@ -77,7 +78,7 @@ namespace TODOComm.Models {
                 Dictionary<Leader, XYZ> updateInfo = new Dictionary<Leader, XYZ>();
 
                 foreach (var item in elemsToUpdate) {
-                    item.Position = Helper.GetElementPosition(modifElem[item.Id]);
+                    item.Position = HelperClass.GetElementPosition(modifElem[item.Id]);
                     updateInfo[item.Leader] = item.Position;
                 }
 
