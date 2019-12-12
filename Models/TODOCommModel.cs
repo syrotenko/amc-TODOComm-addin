@@ -66,44 +66,49 @@ namespace TODOComm.Models {
         private void dragHandler(DocumentChangedEventArgs args) {
             ICollection<ElementId> modifElemIds = args.GetModifiedElementIds();
 
-
             IEnumerable<ElementModel> elemsToUpdate = Comments.Select(comm => comm.Elements)
                                                               .SelectMany(x => x)
                                                               .Where(elem => modifElemIds.Contains(elem.Id));
-
+            
             if (elemsToUpdate.Count() > 0) {
-                Document doc = args.GetDocument();
-                Dictionary<ElementId, Element> modifElem = getElementsById(doc, elemsToUpdate.Select(elem => elem.Id));
-
-                Dictionary<Leader, XYZ> updateInfo = new Dictionary<Leader, XYZ>();
-
-                foreach (var item in elemsToUpdate) {
-                    item.Position = HelperClass.GetElementPosition(modifElem[item.Id]);
-                    updateInfo[item.Leader] = item.Position;
-                }
-
-                Main.getInstance().Transactions.UpdateLeader(doc, updateInfo);
+                dragObjectsHandler(args.GetDocument(), elemsToUpdate);
             }
 
 
             IEnumerable<Comment> updatedComments = Comments.Where(comm => modifElemIds.Contains(comm.TextNoteId));
             
             if (updatedComments.Count() > 0) {
-                Document doc = args.GetDocument();
-                var tmp = ((TextNote)doc.GetElement(updatedComments.First().TextNoteId)).GetLeaders();
-
-                // It's necessary to recreate leaders because Revit creates new leaders each time when TextNote is moved
-                // Error is occured when trying to update existed leaders
-                Main.getInstance().Transactions.RemoveLeaders(doc, updatedComments.Select(comment => (TextNote)doc.GetElement(comment.TextNoteId)));
-                
-                Dictionary<TextNote, IEnumerable<ElementModel>> updateInfo = new Dictionary<TextNote, IEnumerable<ElementModel>>();
-
-                foreach (var comment in updatedComments) {
-                    updateInfo[(TextNote)doc.GetElement(comment.TextNoteId)] = comment.Elements;
-                }
-
-                Main.getInstance().Transactions.CreateLeaders(doc, updateInfo);
+                dragTextNotesHandler(args.GetDocument(), updatedComments);
             }
+        }
+
+        private void dragObjectsHandler(Document doc, IEnumerable<ElementModel> elemsToUpdate) {
+            // Get modified objects
+            IEnumerable<Element> elems = elemsToUpdate.Select(elem => doc.GetElement(elem.Id));
+
+            Dictionary<Leader, XYZ> updateInfo = new Dictionary<Leader, XYZ>();
+
+            // Update position of objects and End point of leaders
+            foreach (ElementModel elementModel in elemsToUpdate) {
+                elementModel.Position = HelperClass.GetElementPosition(elems.Where(elem => elem.Id == elementModel.Id).First());
+                updateInfo[elementModel.Leader] = elementModel.Position;
+            }
+
+            Main.getInstance().Transactions.UpdateLeader(doc, updateInfo);
+        }
+
+        private void dragTextNotesHandler(Document doc, IEnumerable<Comment> updatedComments) {
+            // It's necessary to recreate leaders because Revit creates new leaders each time when TextNote is moved
+            // Error is occured when trying to update existed leaders
+            Main.getInstance().Transactions.RemoveLeaders(doc, updatedComments.Select(comment => (TextNote)doc.GetElement(comment.TextNoteId)));
+
+            Dictionary<TextNote, IEnumerable<ElementModel>> updateInfo = new Dictionary<TextNote, IEnumerable<ElementModel>>();
+
+            foreach (Comment comment in updatedComments) {
+                updateInfo[(TextNote)doc.GetElement(comment.TextNoteId)] = comment.Elements;
+            }
+
+            Main.getInstance().Transactions.CreateLeaders(doc, updateInfo);
         }
 
 
