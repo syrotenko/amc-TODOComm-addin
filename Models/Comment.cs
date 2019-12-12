@@ -126,12 +126,15 @@ namespace TODOComm.Models {
         public Selection selection;
 
 
-        public void addElement(ElementModel element) {
-            Elements.Add(element);
+        public void addElements(IEnumerable<ElementModel> elements) {
+            foreach (ElementModel element in elements) {
+                Elements.Add(element);
+            }
+            
             if (TextNoteId != null && IsVisibleLeaders) {
                 Dictionary<TextNote, IEnumerable<ElementModel>> updateInfo = new Dictionary<TextNote, IEnumerable<ElementModel>>() {
-                        { (TextNote)doc.GetElement(TextNoteId), new List<ElementModel>() { element } }
-                    };
+                    { (TextNote)doc.GetElement(TextNoteId), elements }
+                };
 
                 Main.getInstance().Transactions.CreateLeaders(doc, updateInfo);
             }
@@ -170,17 +173,19 @@ namespace TODOComm.Models {
 
         public void pickElement() {
             Reference objRef = selection.PickObject(ObjectType.Element, Prompts.SELECT_OBJ);
-            Element elem = doc.GetElement(objRef);
+            Element element = doc.GetElement(objRef);
+            ElementModel elementModel = new ElementModel(element.Id, element.Name, Helper.GetElementPosition(element));
 
-            addElement(new ElementModel(elem.Id, elem.Name, Helper.GetElementPosition(elem)));
+            addElements(new List<ElementModel>() { elementModel });
         }
 
         public void pickMultiElements () {
             IList<Reference> objRefs = selection.PickObjects(ObjectType.Element, Prompts.SELECT_OBJS);
-            foreach (Reference objRef in objRefs) {
-                Element elem = doc.GetElement(objRef);
-                addElement(new ElementModel(elem.Id, elem.Name, Helper.GetElementPosition(elem)));
-            }
+            
+            IEnumerable<Element> elements = objRefs.Select(objRef => doc.GetElement(objRef));
+            IEnumerable<ElementModel> elementModels = elements.Select(element => new ElementModel(element.Id, element.Name, Helper.GetElementPosition(element)));
+
+            addElements(elementModels);
         }
 
         private void showElements() {

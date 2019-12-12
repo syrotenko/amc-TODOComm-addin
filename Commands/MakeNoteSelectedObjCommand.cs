@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using TODOComm.Models;
 using TODOComm.UI;
+using System.Linq;
 
 namespace TODOComm.Commands {
     [Autodesk.Revit.Attributes.Transaction(Autodesk.Revit.Attributes.TransactionMode.Manual)]
@@ -22,10 +23,10 @@ namespace TODOComm.Commands {
             ICollection<ElementId> selectedIds = uiDoc.Selection.GetElementIds();
 
             if (selectedIds.Count != 0) {
-                foreach (ElementId elementId in selectedIds) {
-                    Element elem = doc.GetElement(elementId);
-                    comment.addElement(new ElementModel(elem.Id, elem.Name, Helper.GetElementPosition(elem)));
-                }
+                IEnumerable<Element> elements_ = selectedIds.Select(selectedId => doc.GetElement(selectedId));
+                IEnumerable<ElementModel> elementModels = elements_.Select(element => new ElementModel(element.Id, element.Name, Helper.GetElementPosition(element)));
+
+                comment.addElements(elementModels);
             }
             else {
                 TaskDialog.Show("Create comment for selected objects", "Firstly, select elements.");
