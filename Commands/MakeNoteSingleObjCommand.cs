@@ -5,6 +5,7 @@ using System.Reflection;
 using TODOComm.Models;
 using TODOComm.UI;
 using TODOComm.Helper;
+using System;
 
 namespace TODOComm.Commands {
     [Autodesk.Revit.Attributes.Transaction(Autodesk.Revit.Attributes.TransactionMode.Manual)]
@@ -22,6 +23,10 @@ namespace TODOComm.Commands {
                 comment.pickElement();
             }
             catch (Autodesk.Revit.Exceptions.OperationCanceledException) {
+                return Result.Cancelled;
+            }
+            catch (ArgumentException ex) {
+                TaskDialog.Show("Error", ex.Message);
                 return Result.Cancelled;
             }
 

@@ -185,18 +185,30 @@ namespace TODOComm.Models {
         public void pickElement() {
             Reference objRef = selection.PickObject(ObjectType.Element, Prompts.SELECT_OBJ);
             Element element = doc.GetElement(objRef);
-            ElementModel elementModel = new ElementModel(element.Id, element.Name, HelperClass.GetElementPosition(element));
 
-            addElements(new List<ElementModel>() { elementModel });
+            // Handling case when picked objects are not physical elements
+            try {
+                ElementModel elementModel = new ElementModel(element.Id, element.Name, HelperClass.GetElementPosition(element));
+                addElements(new List<ElementModel>() { elementModel });
+            }
+            catch (ArgumentException ex) {
+                throw new ArgumentException(ex.Message);
+            }
         }
 
         public void pickMultiElements () {
             IList<Reference> objRefs = selection.PickObjects(ObjectType.Element, Prompts.SELECT_OBJS);
             
             IEnumerable<Element> elements = objRefs.Select(objRef => doc.GetElement(objRef));
-            IEnumerable<ElementModel> elementModels = elements.Select(element => new ElementModel(element.Id, element.Name, HelperClass.GetElementPosition(element)));
-
-            addElements(elementModels);
+            
+            // Handling case when picked objects are not physical elements
+            try {
+                IEnumerable<ElementModel> elementModels = elements.Select(element => new ElementModel(element.Id, element.Name, HelperClass.GetElementPosition(element)));
+                addElements(elementModels);
+            }
+            catch (ArgumentException ex) {
+                throw new ArgumentException(ex.Message);
+            }
         }
 
         private void showElements() {

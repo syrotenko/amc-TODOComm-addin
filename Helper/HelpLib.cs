@@ -32,8 +32,7 @@ namespace TODOComm.Helper {
                 return lc.Curve.GetEndPoint(0);
             }
             else {
-                // TODO: implement own exeption type
-                throw new Exception("Element should has either Point or Curve location");
+                throw new ArgumentException("Element should has either Point or Curve location");
             }
         }
     }
