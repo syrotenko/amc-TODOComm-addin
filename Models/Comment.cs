@@ -139,6 +139,11 @@ namespace TODOComm.Models {
 
         public void removeElement(ElementModel element) {
             Elements.Remove(element);
+
+            if (IsVisibleLeaders) {
+                hideLeaders();
+                showLeaders();
+            }
         }
 
         public void applyChanges() {
