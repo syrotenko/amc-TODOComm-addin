@@ -78,6 +78,14 @@
       <DependentUpon>Resource.resx</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Transactions\ChangeTextNoteTextHandler.cs" />
+    <Compile Include="Transactions\CreateLeadersHandler.cs" />
+    <Compile Include="Transactions\CreateTextNoteHandler.cs" />
+    <Compile Include="Transactions\ExternalAppEvent.cs" />
+    <Compile Include="Transactions\HideElementsHandler.cs" />
+    <Compile Include="Transactions\RemoveLeadersHandler.cs" />
+    <Compile Include="Transactions\ShowElementsHandler.cs" />
+    <Compile Include="Transactions\UpdateLeaderHandler.cs" />
     <Compile Include="UI\RevitUI.cs" />
     <Compile Include="UI\TODOCommPane.xaml.cs">
       <DependentUpon>TODOCommPane.xaml</DependentUpon>
