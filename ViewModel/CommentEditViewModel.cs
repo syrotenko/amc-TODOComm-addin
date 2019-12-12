@@ -2,6 +2,8 @@
 using TODOComm.Models;
 using TODOComm.UI;
 using TODOComm.Helper;
+using System;
+using Autodesk.Revit.UI;
 
 namespace TODOComm.ViewModel {
 
@@ -72,6 +74,9 @@ namespace TODOComm.ViewModel {
                         Comment.pickMultiElements();
                     }
                     catch (Autodesk.Revit.Exceptions.OperationCanceledException) { }
+                    catch (ArgumentException ex) {
+                        TaskDialog.Show("Error", ex.Message);
+                    }
 
                     CommentEdit win = new CommentEdit(Comment);
                     win.WindowStartupLocation = System.Windows.WindowStartupLocation.CenterScreen;

@@ -1,6 +1,7 @@
 ﻿using Autodesk.Revit.DB;
 using Autodesk.Revit.UI;
 using Autodesk.Revit.UI.Selection;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -122,12 +123,16 @@ namespace TODOComm.Models {
 
 
         public Document doc;
-        //public UIDocument uiDoc;
         public View view;
         public Selection selection;
 
 
         public void addElements(IEnumerable<ElementModel> elements) {
+            // Check if all elements have not were not already been added
+            if (!elements.All(element => !isElementAdded(element.Id))) {
+                throw new ArgumentException("Element with this Id has already been added");
+            }
+
             foreach (ElementModel element in elements) {
                 Elements.Add(element);
             }
@@ -165,6 +170,11 @@ namespace TODOComm.Models {
         public bool isTextNoteExist(ElementId textNoteIdOther) {
             return TextNoteId.Equals(textNoteIdOther);
         }
+
+        public bool isElementAdded(ElementId elementIdOther) {
+            return Elements.Any(element => element.Id.Equals(elementIdOther));
+        }
+
         public void highlightComment() {
             List<ElementId> elemIdsToHighlight = Elements.Select(x => x.Id).ToList();
             elemIdsToHighlight.Add(TextNoteId);
